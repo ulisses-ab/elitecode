@@ -1,81 +1,72 @@
 import type { Problem } from "@/types/Problem";
 import type { Submission } from "@/types/Submission";
 import { format } from "timeago.js";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
-import { CheckCircle2, XCircle, Clock, Code2 } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-function statusConfig(status: Submission["status"]) {
+type StatusConfig = {
+  label: string;
+  dot: string;
+  text: string;
+};
+
+function statusConfig(status: Submission["status"]): StatusConfig {
   switch (status) {
     case "ACCEPTED":
-      return {
-        label: "Accepted",
-        icon: CheckCircle2,
-        className: "bg-green-500/10 text-green-600 border-green-500/20",
-      };
+      return { label: "Accepted",     dot: "bg-emerald-400", text: "text-emerald-400" };
     case "REJECTED":
-      return {
-        label: "Wrong answer",
-        className: "bg-muted text-muted-foreground",
-      };
+      return { label: "Wrong Answer", dot: "bg-rose-400",    text: "text-rose-400"    };
     case "PENDING":
-      return {
-        label: <div className="flex">Pending<Loader2 className="ml-2 w-4 h-4 animate-spin"/></div>,
-        className: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-      };
+      return { label: "Pending",      dot: "bg-blue-400",    text: "text-blue-400"    };
     default:
-      return {
-        label: "Failed",
-        className: "bg-gray-500/10 text-red-600 border-red-500/20",
-      };
+      return { label: "Error",        dot: "bg-rose-400",    text: "text-rose-400"    };
   }
 }
 
-export type SubmissionCardProps = 
-  React.ComponentProps<typeof Card> & {
-    submission: Submission;
-    problem: Problem;
-  };
+export type SubmissionCardProps = {
+  submission: Submission;
+  problem: Problem;
+  onClick?: () => void;
+};
 
-export function SubmissionCard({
-  submission,
-  problem,
-  ...childProps
-}: SubmissionCardProps) {
-  const language = problem.setups.find(
-    setup => setup.id === submission.setupId
-  )?.language;
-
+export function SubmissionCard({ submission, problem, onClick }: SubmissionCardProps) {
   const status = statusConfig(submission.status);
+  const isPending = submission.status === "PENDING";
 
   return (
-    <Card {...childProps} className="flex m-4 cursor-pointer flex-col items-center justify-between gap-4 rounded-xl px-4 py-3 transition-colors hover:bg-muted/50">
-      <div className="flex w-full justify-between">
-        <div className="flex items-start gap-2">
-          <Badge
-            variant="default"
-            className={status.className}
-          >
-            {status.label}
-          </Badge>
-          <div className="text-sm text-muted-foreground">
-            {format(submission.submittedAt)}
-          </div>
-        </div>
+    <div
+      onClick={isPending ? undefined : onClick}
+      className={cn(
+        "group flex items-center gap-3 px-5 py-3 border-b border-border/30 transition-colors",
+        isPending
+          ? "cursor-default opacity-70"
+          : "cursor-pointer hover:bg-white/[0.03]"
+      )}
+    >
+      {/* Status dot / spinner */}
+      {isPending ? (
+        <Loader2 size={12} className="shrink-0 text-blue-400 animate-spin" />
+      ) : (
+        <span className={cn("w-2 h-2 rounded-full shrink-0", status.dot)} />
+      )}
 
+      {/* Label */}
+      <span className={cn("text-sm font-medium", status.text)}>
+        {status.label}
+      </span>
 
-      </div> 
+      {/* Time */}
+      <span className="text-xs text-muted-foreground/50 ml-auto tabular-nums">
+        {format(submission.submittedAt)}
+      </span>
 
-      <div className="flex w-full justify-between"> 
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-        </div>
-        
-        { submission.status === "PENDING" ? <div></div> : <span
-          className="text-sm text-blue-400 hover:text-blue-500"
-        >View submission →</span>}
-      </div>
-      
-    </Card>
+      {/* Arrow */}
+      {!isPending && (
+        <ChevronRight
+          size={14}
+          className="text-muted-foreground/25 group-hover:text-muted-foreground/60 transition-colors shrink-0"
+        />
+      )}
+    </div>
   );
 }

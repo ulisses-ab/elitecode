@@ -8,5 +8,6 @@ export type OAuthUser = {
 }
 
 export interface IOAuthService {
+  getAuthUrl(provider: OAuthProvider, state: string): string
   getUserFromAuthCode(provider: OAuthProvider, code: string): Promise<OAuthUser>
 }

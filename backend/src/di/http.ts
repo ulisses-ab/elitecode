@@ -14,6 +14,7 @@ import {
   getSubmissionUseCase,
   getSubmissionWithResultsUseCase,
   getUserUseCase,
+  getUserProfileUseCase,
   getAllSubmissionsForProblemUseCase,
   getLatestSubmissionForProblemUseCase,
   submitRunnerFileUseCase,
@@ -34,16 +35,14 @@ import { createAuthRoutes } from "../http/routes/authRoutes"
 import { createProblemsRoutes } from "../http/routes/problemsRoutes"
 import { createUsersRoutes } from "../http/routes/usersRoutes"
 
-import { googleOAuthClient } from "./infra";
-import { githubOAuthClient } from "./infra";
+import { oAuthService } from "./infra";
 
 import dotenv from "dotenv";
 dotenv.config();
 
 export const authController = new AuthController(
   oAuthCallbackUseCase,
-  googleOAuthClient,
-  githubOAuthClient,
+  oAuthService,
   process.env.FRONTEND_OAUTH_REDIRECT_URL!
 );
 
@@ -70,7 +69,8 @@ export const submissionsController = new SubmissionsController(
 );
 
 export const usersController = new UsersController(
-  getUserUseCase
+  getUserUseCase,
+  getUserProfileUseCase
 );
 
 export const authMiddleware = createAuthMiddleware(jwtService);

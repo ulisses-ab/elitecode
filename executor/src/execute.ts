@@ -2,7 +2,7 @@ import fs from "fs";
 import { exec } from "child_process";
 import util from "util";
 import lodash from 'lodash';
-
+import pLimit from "p-limit";
 
 import dotenv from "dotenv";
 import { error } from "console";
@@ -15,6 +15,11 @@ async function createContainer(baseDir: string) {
         
     const createCommand = [
         "docker run -d",
+        "--memory=256m",
+        "--memory-swap=256m",
+        "--cpus=0.5",
+        "--pids-limit=128",
+        "--network=none",
         `-v ${baseDir}/input:/workspace/input:ro`,
         `-v ${baseDir}/code:/workspace/code:ro`,
         `-v ${baseDir}/runner:/workspace/runner:ro`,
@@ -53,8 +58,6 @@ async function runCompileScriptIfPresent(baseDir: string, containerId: string) {
         const compileOutput = await execAsync(command, {
             timeout: 10000, 
         });
-
-        console.log(compileOutput);
     }
     catch (err) {
         console.log(err);
@@ -105,8 +108,6 @@ function processOutput({ stdout, stderr, expected_output, input }: any) {
     result.stdout = userOutput;
 
     const testerObj = JSON.parse(testerOutput);
-
-    console.log(testerObj);
 
     result.actual_output = testerObj.actual_output;
     result.time_ms = testerObj.time_ms ?? null;
@@ -185,7 +186,7 @@ async function buildAndRun(baseDir: string, containerId: string) {
     return results;
 }
 
-export async function execute(baseDir: string) {
+async function createContainerAndRun(baseDir: string) {
     const containerId = await createContainer(baseDir);
 
     try {
@@ -194,4 +195,12 @@ export async function execute(baseDir: string) {
     finally {
         await stopContainer(containerId);
     }
+}
+
+const limit = pLimit(4);
+
+export async function execute(baseDir: string) {
+    return limit(async () => {
+        return createContainerAndRun(baseDir);
+    });
 }

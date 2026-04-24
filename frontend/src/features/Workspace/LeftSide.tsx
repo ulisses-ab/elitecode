@@ -15,36 +15,38 @@ export function LeftSide() {
   const setup = useWorkspaceStore((state) => state.setup);  
 
   return (
-    <div className="bg-card h-full flex flex-col">
+    <div className="h-full flex flex-col">
       <Tabs
         value={leftTab}
         onValueChange={(value) => setLeftTab(value)}
-        className="flex flex-col flex-1"
+        className="flex flex-col h-full"
       >
-        <div className="bg-muted">
-          <TabsList>
-            <TabsTrigger value="statement">Statement</TabsTrigger>
-            <TabsTrigger value="submissions">Submissions</TabsTrigger>
+        <div className="border-b border-border/50 bg-background/30 shrink-0 px-2 pt-1">
+          <TabsList className="bg-transparent gap-0 h-9 p-0">
+            <TabsTrigger value="statement" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
+              Statement
+            </TabsTrigger>
+            <TabsTrigger value="submissions" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
+              Submissions
+            </TabsTrigger>
           </TabsList>
         </div>
 
-        <div className="overflow-auto flex-1">
-          <TabsContent className="mt-0" value="statement" forceMount>
-            { import.meta.env.VITE_ENVIRONMENT === "development" && (
-              <div className="text-sm text-muted-foreground px-2">
-                Problem ID: {problem?.id}
-                <br />
-                Setup ID: {setup?.id || "None"}
+        <div className="flex-1 min-h-0">
+          <TabsContent className="mt-0 h-full" value="statement" forceMount>
+            {import.meta.env.VITE_ENVIRONMENT === "development" && (
+              <div className="text-xs text-muted-foreground/50 px-3 py-1 font-mono">
+                {problem?.id} / {setup?.id || "no setup"}
               </div>
             )}
             <ProblemDisplayer problem={problem ?? undefined} />
           </TabsContent>
 
-          <TabsContent className="mt-0" value="submissions" forceMount>
+          <TabsContent className="mt-0 h-full overflow-y-auto" value="submissions" forceMount>
             <SubmissionsTab />
           </TabsContent>
         </div>
       </Tabs>
     </div>
-  )
+  );
 }

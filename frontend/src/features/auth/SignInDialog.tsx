@@ -34,19 +34,19 @@ export function SignInDialog({ children }: SignInDialogProps) {
           <Button
             variant="outline"
             onClick={google}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2.5 h-10 border-border/60 bg-card/50 hover:bg-card transition-colors"
           >
-            <FaGoogle className="w-5 h-5" />
-            Sign in with Google
+            <FaGoogle className="w-4 h-4" />
+            <span className="text-sm">Continue with Google</span>
           </Button>
 
           <Button
             variant="outline"
             onClick={github}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2.5 h-10 border-border/60 bg-card/50 hover:bg-card transition-colors"
           >
-            <FaGithub className="w-5 h-5" />
-            Sign in with GitHub
+            <FaGithub className="w-4 h-4" />
+            <span className="text-sm">Continue with GitHub</span>
           </Button>
         </div>
 

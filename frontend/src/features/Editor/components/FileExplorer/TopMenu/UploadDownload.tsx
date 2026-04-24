@@ -31,15 +31,14 @@ export function UploadDownload() {
   };
 
   return (
-    <div className="flex items-center space-x-2 p-2">
-      <Button 
-        className="flex-1" 
-        variant="outline" 
+    <div className="flex items-center gap-0.5">
+      <button
+        className="p-1.5 rounded text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.06] transition-colors"
         onClick={handleDownload}
-        title="Download Zip"
+        title="Export as ZIP"
       >
-        <FaDownload />
-      </Button>
+        <FaDownload size={12} />
+      </button>
 
       <input
         type="file"
@@ -49,14 +48,13 @@ export function UploadDownload() {
         style={{ display: "none" }}
       />
 
-      <Button 
-        className="flex-1" 
-        variant="outline" 
+      <button
+        className="p-1.5 rounded text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.06] transition-colors"
         onClick={handleUploadClick}
-        title="Upload Zip"
+        title="Import ZIP"
       >
-        <FaUpload />
-      </Button>
+        <FaUpload size={12} />
+      </button>
     </div>
   );
 }

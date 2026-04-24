@@ -33,8 +33,8 @@ export function FileBreadcrumb() {
   )
 
   return (
-    <Breadcrumb className="px-2 bg-[#121318ff]">
-      <BreadcrumbList>
+    <Breadcrumb className="px-3 py-1.5 bg-[#191b24] border-b border-white/[0.06] text-[11px]">
+      <BreadcrumbList className="text-muted-foreground/50">
         {ancestorList.map(getAncestorElement)}
       </BreadcrumbList>
     </Breadcrumb>

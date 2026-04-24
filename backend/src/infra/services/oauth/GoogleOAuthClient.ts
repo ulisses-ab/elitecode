@@ -3,36 +3,37 @@ import { OAuthUser } from "../../../application/services/interfaces/IOAuthServic
 import { OAuthProvider } from "../../../domain/types/OAuthProvider";
 
 export class GoogleOAuthClient implements IOAuthClient {
+  private static readonly AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
+  private static readonly TOKEN_URL = "https://oauth2.googleapis.com/token";
+
   constructor(
     private readonly clientId: string,
     private readonly clientSecret: string,
     private readonly redirectUri: string,
   ) {}
 
-  public getAuthUrl(state: string): string {    
+  public getAuthUrl(state: string): string {
     const params = new URLSearchParams({
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
-      response_type: 'code',
-      scope: 'email profile',
+      response_type: "code",
+      scope: "openid email profile",
       state,
+      access_type: "online",
     });
 
-    return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+    return `${GoogleOAuthClient.AUTH_URL}?${params.toString()}`;
   }
 
   public async getUserFromAuthCode(code: string): Promise<OAuthUser> {
-    const accessToken = await this.exchangeCodeForAccessToken(code);
-
-    return await this.fetchUserInfo(accessToken);
+    const tokens = await this.exchangeCodeForTokens(code);
+    return this.extractUserFromIdToken(tokens.id_token);
   }
 
-  private async exchangeCodeForAccessToken(code: string): Promise<string> {
-    const response = await fetch("https://oauth2.googleapis.com/token", {
+  private async exchangeCodeForTokens(code: string): Promise<{ id_token: string }> {
+    const response = await fetch(GoogleOAuthClient.TOKEN_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
         client_id: this.clientId,
@@ -42,33 +43,34 @@ export class GoogleOAuthClient implements IOAuthClient {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error("Failed to exchange auth code for access token");
-    }
-
     const data = await response.json();
 
-    return data.access_token;
+    if (!response.ok || data.error) {
+      throw new Error(`Google token exchange failed: ${data.error_description ?? data.error ?? response.statusText}`);
+    }
+
+    if (!data.id_token) {
+      throw new Error("Google token response missing id_token");
+    }
+
+    return data;
   }
 
-  private async fetchUserInfo(accessToken: string): Promise<OAuthUser> {
-    const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+  private extractUserFromIdToken(idToken: string): OAuthUser {
+    const payloadBase64 = idToken.split(".")[1];
+    const payload = JSON.parse(
+      Buffer.from(payloadBase64.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8")
+    );
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch Google user info");
+    if (!payload.email || !payload.sub) {
+      throw new Error("Google id_token missing required fields");
     }
-
-    const data = await response.json();
 
     return {
-      email: data.email,
-      name: data.name,
+      email: payload.email,
+      name: payload.name ?? payload.email,
       provider: OAuthProvider.GOOGLE,
-      providerUserId: data.sub,
-    }
+      providerUserId: payload.sub,
+    };
   }
 }

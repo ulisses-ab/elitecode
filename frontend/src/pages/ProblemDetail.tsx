@@ -5,10 +5,10 @@ import { Workspace } from "@/features/Workspace/Workspace";
 export function ProblemDetail() {
   const { id } = useParams<{ id: string }>();
 
-  return <>
-    <div className="h-screen flex flex-col">
+  return (
+    <div className="h-screen flex flex-col bg-background">
       <Navbar />
       <Workspace problemId={id!} />
-    </ div>
-  </>
+    </div>
+  )
 }

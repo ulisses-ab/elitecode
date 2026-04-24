@@ -17,6 +17,7 @@ import { GetSubmissionWithResultsUseCase } from "../application/usecases/submiss
 import { MakeSubmissionUseCase } from "../application/usecases/submissions/MakeSubmissionUseCase";
 
 import { GetUserUseCase } from "../application/usecases/users/GetUserUseCase";
+import { GetUserProfileUseCase } from "../application/usecases/users/GetUserProfileUseCase";
 
 import { SubmissionTimeoutService } from "../application/services/SubmissionTimeoutService";
 import { TemporarySubmissionCleanupService } from "../application/services/TemporarySubmissionCleanupService";
@@ -127,6 +128,11 @@ export const getLatestSubmissionForProblemUseCase = new GetLatestSubmissionForPr
 
 export const getUserUseCase = new GetUserUseCase(
   prismaUserRepo
+);
+
+export const getUserProfileUseCase = new GetUserProfileUseCase(
+  prismaUserRepo,
+  prismaSubmissionRepo
 );
 
 export const submissionTimeoutService = new SubmissionTimeoutService(

@@ -78,9 +78,9 @@ export function NodeContent({ node }: {
     <>
       {node.isInternal ? (
         node.isOpen ? (
-          <ChevronDown size={14} className="text-[#c5c5c5]" />
+          <ChevronDown size={14} className="text-muted-foreground/50 shrink-0" />
         ) : (
-          <ChevronRight size={14} className="text-[#c5c5c5]" />
+          <ChevronRight size={14} className="text-muted-foreground/50 shrink-0" />
         )
       ) : (
         <FileIcon name={fileIconName!} isFolder={false} />
@@ -95,7 +95,7 @@ export function NodeContent({ node }: {
         onBlur={submitRename}
         hidden={!isRenaming}
         onClick={(e) => e.stopPropagation()}
-        className="px-1 py-0 border flex-1 min-w-0 border-blue-500 rounded outline-none"
+        className="px-1 py-0 border flex-1 min-w-0 border-indigo-500/60 rounded outline-none bg-[#0f1117] text-foreground text-sm"
       />
 
       <span hidden={isRenaming}>{node.data.name}</span>

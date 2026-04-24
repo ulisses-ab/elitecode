@@ -3,19 +3,29 @@ import { useEditorStore } from "../../store/store";
 import { FileBreadcrumb } from "./FileBreadcrumb";
 
 function handleMount(editor: any, monaco: any) {
-  //monaco.languages.registerCompletionItemProvider("cpp");
-
-  monaco.editor.defineTheme("my-dark", {
+  monaco.editor.defineTheme("lc-dark", {
     base: "vs-dark",
     inherit: true,
-    rules: [],
+    rules: [
+      { token: "comment", foreground: "4a5068", fontStyle: "italic" },
+    ],
     colors: {
-      "editor.background": "#121318ff",
-      "editorLineNumber.foreground": "#858585",
-      "editorCursor.foreground": "#ffffff",
+      "editor.background":              "#191b24",
+      "editor.foreground":              "#dde1f0",
+      "editor.lineHighlightBackground": "#ffffff07",
+      "editor.selectionBackground":     "#3b4bdb38",
+      "editorLineNumber.foreground":    "#3e4260",
+      "editorLineNumber.activeForeground": "#6b7280",
+      "editorCursor.foreground":        "#818cf8",
+      "editorIndentGuide.background1":  "#22253a",
+      "editorBracketMatch.background":  "#3b4bdb28",
+      "editorBracketMatch.border":      "#4f5fd0",
+      "scrollbarSlider.background":     "#ffffff0d",
+      "scrollbarSlider.hoverBackground":"#ffffff18",
+      "scrollbarSlider.activeBackground":"#ffffff22",
     },
   });
-  monaco.editor.setTheme("my-dark");
+  monaco.editor.setTheme("lc-dark");
 }
 
 export function CodeEditor({ language = "cpp" }: { 
@@ -27,10 +37,8 @@ export function CodeEditor({ language = "cpp" }: {
 
   if(!activeFileId) {
     return (
-      <div className="flex h-full items-center justify-center">
-        <div className="">
-          Select file...
-        </div>
+      <div className="flex h-full items-center justify-center bg-[#191b24]">
+        <p className="text-xs text-muted-foreground/40">Select a file to edit</p>
       </div>
     )
   }

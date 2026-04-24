@@ -28,19 +28,19 @@ export function Workspace({ problemId }: { problemId: string }) {
   }, [])
 
   return (
-    <ResizablePanelGroup 
-      direction="horizontal" 
+    <ResizablePanelGroup
+      direction="horizontal"
       className="flex-1"
     >
-      <ResizablePanel 
-        className="min-w-40 m-2 mt-0 ml-2 mr-1 rounded-lg border-gray-700 border-1"
+      <ResizablePanel
+        className="min-w-40 m-2.5 mr-1 rounded-xl border border-border/50 bg-card/40 overflow-hidden"
         defaultSize={33}
       >
         <LeftSide />
       </ResizablePanel>
-      <ResizableHandle className="bg-transparent"/>
-      <ResizablePanel 
-        className="min-w-40 m-2 mt-0 mr-2 ml-1 rounded-lg border-gray-700 border-1"
+      <ResizableHandle className="bg-transparent w-2"/>
+      <ResizablePanel
+        className="min-w-40 m-2.5 ml-1 rounded-xl border border-border/50 bg-card/40 overflow-hidden"
       >
         <RightSide />
       </ResizablePanel>

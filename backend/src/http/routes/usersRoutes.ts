@@ -12,5 +12,10 @@ export function createUsersRoutes(
     userController.getUser.bind(userController)
   );
 
+  router.get("/me/profile",
+    authMiddleware,
+    userController.getUserProfile.bind(userController)
+  );
+
   return router;
 }

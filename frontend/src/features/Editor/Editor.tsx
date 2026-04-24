@@ -50,20 +50,18 @@ export const Editor = forwardRef<EditorRef, {
   }), [nodes, rootId]);
 
   return (
-    <ResizablePanelGroup 
-      direction="horizontal" 
-      className="flex-1 overflow-auto border-none bg-card"
+    <ResizablePanelGroup
+      direction="horizontal"
+      className="flex-1 overflow-auto border-none"
     >
-      <ResizablePanel 
-        className="min-w-40"
-        defaultSize={10}
+      <ResizablePanel
+        className="min-w-36 max-w-64"
+        defaultSize={18}
       >
         <FileExplorer />
       </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel
-        className="bg-[#121318]"
-      >
+      <ResizableHandle className="bg-white/[0.04] w-px hover:bg-white/10 transition-colors" />
+      <ResizablePanel className="bg-[#191b24]">
         <CodeEditor />
       </ResizablePanel>
     </ResizablePanelGroup>

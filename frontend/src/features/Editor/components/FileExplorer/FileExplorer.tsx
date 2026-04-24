@@ -30,9 +30,9 @@ export function FileExplorer() {
 
   return (
     <div
-      tabIndex={0}         
+      tabIndex={0}
       onKeyDown={onKeyDown}
-      className="h-full flex flex-col select-none text-white border-r border-[#1e1e1e] outline-none"
+      className="h-full flex flex-col select-none text-foreground/80 bg-[#141620] border-r border-white/[0.07] outline-none"
     >
       <TopMenu />
       <FileTree />

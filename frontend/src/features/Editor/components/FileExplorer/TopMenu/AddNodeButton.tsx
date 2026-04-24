@@ -27,8 +27,8 @@ export function AddNodeButton({ type }: { type: "folder" | "file" }) {
   return (
     <button
       onClick={handleAdd}
-      className="flex items-center gap-1 text-xs text-[#bbbbbb] hover:bg-[#2a2d2e] rounded"
-      title="Add new folder"
+      className="flex items-center gap-1 p-1 rounded text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.06] transition-colors"
+      title={type === "file" ? "New file" : "New folder"}
     >
       {type === "file" ? (
         <TbFilePlus size={18} />

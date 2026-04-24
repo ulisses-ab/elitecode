@@ -1,43 +1,63 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/features/auth/store";
 import { fetchUser } from "@/api/functions/user";
 
 export function OAuthReturn() {
-  const [searchParams] = useSearchParams();
-  const login = useAuthStore((s) => s.login);
+  // const [searchParams] = useSearchParams();
+  // const navigate = useNavigate();
+  // const login = useAuthStore((s) => s.login);
+  // const [error, setError] = useState<string | null>(null);
+
+  return (<div>aura</div>)
 
   useEffect(() => {
-    const func = async () => {
-      const token = searchParams.get("token");
-      const state = searchParams.get("state");
+    const run = async () => {
+      if (searchParams.get("error")) {
+        setError("Authentication failed. Please try again.");
+        return;
+      }
 
+      const token = searchParams.get("token");
       if (!token) {
-        console.error("OAuth token missing");
+        setError("Authentication failed: no token received.");
         return;
       }
 
       const user = await fetchUser(token);
-
       if (!user) {
-        console.error("User not found");
+        setError("Authentication failed: could not load user.");
         return;
       }
 
       login(user, token);
 
-      let returnURL = "/";
+      let returnPath = "/";
       try {
-        const parsed = JSON.parse(decodeURIComponent(state!));
-        returnURL = parsed?.returnURL || "/";
-        console.log(parsed);
+        const state = searchParams.get("state");
+        const parsed = JSON.parse(state!);
+        const url = new URL(parsed?.returnURL ?? "/");
+        returnPath = url.pathname + url.search + url.hash;
       } catch {}
 
-      window.location.href = returnURL;
+      navigate(returnPath, { replace: true });
     };
 
-    func();
-  }, [searchParams, login]);
+    run();
+  }, []);
 
-  return null;
+  if (error) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh", gap: "1rem" }}>
+        <p>{error}</p>
+        <a href="/">Go back</a>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh" }}>
+      <p>Signing in...</p>
+    </div>
+  );
 }

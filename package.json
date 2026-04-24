@@ -1,0 +1,23 @@
+{
+  "name": "leetcode-clone-new",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently --names backend,frontend,executor --prefix-colors cyan,magenta,yellow \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"npm run dev --prefix executor\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ulisses-ab/my-leetcode.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ulisses-ab/my-leetcode/issues"
+  },
+  "homepage": "https://github.com/ulisses-ab/my-leetcode#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

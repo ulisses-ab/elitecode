@@ -5,6 +5,8 @@ export interface ISubmissionRepo {
 
   findById(id: string): Promise<Submission | null>;
   findAllByUserId(userId: string): Promise<Submission[]>;
+  findNonTemporaryByUserId(userId: string): Promise<Submission[]>;
+  findSolvedProblemDifficulties(userId: string): Promise<Array<{problemId: string, difficulty: string}>>;
   findAllByUserIdAndProblemId(userId: string, problemId: string): Promise<Submission[]>;
   findLatestByUserIdAndProblemId(userId: string, problemId: string): Promise<Submission | null>;
 

@@ -24,7 +24,22 @@ const worker = new Worker(
       const baseDir = await load(job.data.submissionId);
       if (!baseDir) return "error";
 
-      const results = await execute(baseDir);
+      let results;
+
+      try {
+        results = await execute(baseDir);
+      }
+      catch (err) {
+        submit(job.data.submissionId, {
+          status: "FAILED",
+          errorType: "Internal error",
+          error: err.message
+        });
+
+        fs.rmSync(baseDir, { recursive: true, force: true });
+
+        return "error";
+      }
 
       await submit(job.data.submissionId, results);
 

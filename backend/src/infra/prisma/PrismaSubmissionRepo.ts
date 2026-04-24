@@ -49,6 +49,26 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
     return submissions.map(this.map);
   }
 
+  async findNonTemporaryByUserId(userId: string): Promise<Submission[]> {
+    const submissions = await this.prisma.submission.findMany({
+      where: { userId, temporary: false },
+      orderBy: { submittedAt: "desc" },
+    });
+    return submissions.map(this.map);
+  }
+
+  async findSolvedProblemDifficulties(userId: string): Promise<Array<{problemId: string, difficulty: string}>> {
+    const rows = await this.prisma.submission.findMany({
+      where: { userId, temporary: false, status: "ACCEPTED" },
+      distinct: ["problemId"],
+      select: {
+        problemId: true,
+        problem: { select: { difficulty: true } },
+      },
+    });
+    return rows.map((r: any) => ({ problemId: r.problemId, difficulty: r.problem.difficulty }));
+  }
+
   async findAllByUserIdAndProblemId(
     userId: string,
     problemId: string
