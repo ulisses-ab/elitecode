@@ -4,10 +4,11 @@ import { SubmissionsController } from '../controllers/SubmissionsController';
 import { Multer } from 'multer';
 
 export function createProblemsRoutes(
-  authMiddleware: RequestHandler, 
-  problemsController: ProblemsController, 
+  authMiddleware: RequestHandler,
+  problemsController: ProblemsController,
   submissionsController: SubmissionsController,
   upload: Multer,
+  submissionRateLimiter: RequestHandler,
 ) {
   const router = express.Router();
 
@@ -24,8 +25,9 @@ export function createProblemsRoutes(
     problemsController.getTestsForDisplay.bind(problemsController)
   );
 
-  router.post('/:problemId/setups/:setupId/submissions', 
+  router.post('/:problemId/setups/:setupId/submissions',
     authMiddleware,
+    submissionRateLimiter,
     upload.single("file"),
     submissionsController.makeSubmission.bind(submissionsController)
   );
@@ -37,11 +39,22 @@ export function createProblemsRoutes(
     authMiddleware,
     submissionsController.getLatestSubmissionForProblem.bind(submissionsController)
   );
+  router.get('/:problemId/setups/:setupId/leaderboard',
+    submissionsController.getLeaderboard.bind(submissionsController)
+  );
   
   
-  router.post('/', 
+  router.post('/',
     authMiddleware,
     problemsController.createProblem.bind(problemsController)
+  );
+  router.patch('/:problemId',
+    authMiddleware,
+    problemsController.updateProblem.bind(problemsController)
+  );
+  router.delete('/:problemId',
+    authMiddleware,
+    problemsController.deleteProblem.bind(problemsController)
   );
   router.post('/:problemId/setups', 
     authMiddleware, 

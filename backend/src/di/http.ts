@@ -6,6 +6,8 @@ import {
   submitExecutionResultsUseCase,
   addProblemSetupUseCase,
   createProblemUseCase,
+  deleteProblemUseCase,
+  updateProblemUseCase,
   getProblemUseCase,
   getTestsForDisplayUseCase,
   listProblemsUseCase,
@@ -13,27 +15,33 @@ import {
   makeSubmissionUseCase,
   getSubmissionUseCase,
   getSubmissionWithResultsUseCase,
+  getSubmissionCodeUseCase,
   getUserUseCase,
   getUserProfileUseCase,
+  updateUsernameUseCase,
   getAllSubmissionsForProblemUseCase,
   getLatestSubmissionForProblemUseCase,
+  getLeaderboardUseCase,
   submitRunnerFileUseCase,
   submitTemplateFileUseCase,
   getTemplateFileUseCase,
 } from "./application";
 
 import { jwtService } from "./infra"
+import { redis } from "./clients/redis"
 
 import { AuthController } from "../http/controllers/AuthController"
 import { ProblemsController } from "../http/controllers/ProblemsController"
 import { SubmissionsController } from "../http/controllers/SubmissionsController"
 import { UsersController } from "../http/controllers/UsersController"
 import { createAuthMiddleware } from "../http/middleware/authMiddleware";
+import { createSubmissionRateLimiter } from "../http/middleware/submissionRateLimitMiddleware";
 
 import { createSubmissionsRoutes } from "../http/routes/submissionsRoutes"
 import { createAuthRoutes } from "../http/routes/authRoutes"
 import { createProblemsRoutes } from "../http/routes/problemsRoutes"
 import { createUsersRoutes } from "../http/routes/usersRoutes"
+import { createFeedbackRoutes } from "../http/routes/feedbackRoutes"
 
 import { oAuthService } from "./infra";
 
@@ -47,8 +55,10 @@ export const authController = new AuthController(
 );
 
 export const problemsController = new ProblemsController(
-  createProblemUseCase, 
-  getProblemUseCase, 
+  createProblemUseCase,
+  deleteProblemUseCase,
+  updateProblemUseCase,
+  getProblemUseCase,
   listProblemsUseCase, 
   addProblemSetupUseCase,
   getTestsForDisplayUseCase,
@@ -66,22 +76,27 @@ export const submissionsController = new SubmissionsController(
   getSubmissionWithResultsUseCase,
   getAllSubmissionsForProblemUseCase,
   getLatestSubmissionForProblemUseCase,
+  getLeaderboardUseCase,
+  getSubmissionCodeUseCase,
 );
 
 export const usersController = new UsersController(
   getUserUseCase,
-  getUserProfileUseCase
+  getUserProfileUseCase,
+  updateUsernameUseCase
 );
 
 export const authMiddleware = createAuthMiddleware(jwtService);
+export const submissionRateLimiter = createSubmissionRateLimiter(redis);
 
 export const upload = multer();
 
 export const problemsRoutes = createProblemsRoutes(
-  authMiddleware, 
-  problemsController, 
+  authMiddleware,
+  problemsController,
   submissionsController,
   upload,
+  submissionRateLimiter,
 );
 
 export const submissionsRoutes = createSubmissionsRoutes(
@@ -98,3 +113,5 @@ export const usersRoutes = createUsersRoutes(
 export const authRoutes = createAuthRoutes(
   authController
 );
+
+export const feedbackRoutes = createFeedbackRoutes();

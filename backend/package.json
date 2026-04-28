@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "redis-server --port 6767 & tsx watch src/server.ts",
     "build": "(npm i) && (npx prisma generate) && (tsc)",
+    "vercel-build": "npx prisma generate",
     "start": "(npx prisma db push) && (node dist/server.js)"
   },
   "keywords": [],
@@ -15,6 +16,7 @@
     "@aws-sdk/client-s3": "^3.948.0",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^7.1.0",
+    "@types/bcrypt": "^6.0.0",
     "archiver": "^7.0.1",
     "axios": "^1.13.2",
     "bcrypt": "^6.0.0",
@@ -31,7 +33,6 @@
     "zod": "^4.1.13"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",

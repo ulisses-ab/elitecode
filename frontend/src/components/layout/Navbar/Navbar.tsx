@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { UserMenu } from "./UserMenu";
+import { ReportBugButton } from "./ReportBugButton";
 import type { HTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 import { useNavbarStore } from "@/stores/useNavbarStore";
@@ -9,7 +10,7 @@ interface NavbarProps extends HTMLAttributes<HTMLElement> {
   title?: string;
 }
 
-export function Navbar({ title = "LeetClone", className, ...props }: NavbarProps) {
+export function Navbar({ title = "EliteCode", className, ...props }: NavbarProps) {
   const navbarCenter = useNavbarStore((state) => state.navbarCenter);
 
   return (
@@ -24,11 +25,11 @@ export function Navbar({ title = "LeetClone", className, ...props }: NavbarProps
       <div className="flex flex-1 items-center space-x-1">
         <Link to="/" className="flex items-center gap-2 mr-1 group">
           <div className="flex items-center justify-center w-7 h-7 rounded-md bg-foreground/5 border border-border/50 group-hover:border-border transition-colors">
-            <span className="text-xs font-bold font-mono text-foreground/70">{"<>"}</span>
+            <span className="text-xs font-bold font-mono text-foreground/70">{"{}"}</span>
           </div>
           <span className="font-semibold text-[15px] tracking-tight text-foreground/90">{title}</span>
         </Link>
-        <Link to="/problems">
+        <Link to="/problems" className="hidden sm:block">
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-normal text-sm">
             Problems
           </Button>
@@ -39,7 +40,8 @@ export function Navbar({ title = "LeetClone", className, ...props }: NavbarProps
         {navbarCenter}
       </div>
 
-      <div className="flex-1 flex justify-end">
+      <div className="flex-1 flex justify-end items-center gap-3">
+        <ReportBugButton />
         <UserMenu />
       </div>
     </nav>

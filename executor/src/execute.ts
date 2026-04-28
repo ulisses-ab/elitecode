@@ -1,34 +1,33 @@
 import fs from "fs";
 import { exec } from "child_process";
 import util from "util";
-import lodash from 'lodash';
 import pLimit from "p-limit";
 
 import dotenv from "dotenv";
-import { error } from "console";
 dotenv.config();
+
+const CREATE_CONTAINER_TIMEOUT_MS = 1000*30;
+const COMPILE_TIMEOUT_MS = 1000*120;
+const TESTCASE_TIMEOUT_MS = 1000*30;
+const TESTCASE_MAX_BUFFER_BYTES = 10*1024*1024;
 
 const execAsync = util.promisify(exec);
 
 async function createContainer(baseDir: string) {
     const dockerImage = process.env.EXECUTOR_DOCKER_IMAGE!;
-        
+
     const createCommand = [
         "docker run -d",
-        "--memory=256m",
-        "--memory-swap=256m",
-        "--cpus=0.5",
-        "--pids-limit=128",
         "--network=none",
         `-v ${baseDir}/input:/workspace/input:ro`,
         `-v ${baseDir}/code:/workspace/code:ro`,
         `-v ${baseDir}/runner:/workspace/runner:ro`,
         `-v ${baseDir}/build:/workspace/build:rw`,
         dockerImage,
-        "sleep 180"
+        "sleep infinity"
     ].join(" ");
 
-    const { stdout } = await execAsync(createCommand);
+    const { stdout } = await execAsync(createCommand, { timeout: CREATE_CONTAINER_TIMEOUT_MS });
     const containerId = stdout.trim();
 
     return containerId;
@@ -55,15 +54,16 @@ async function runCompileScriptIfPresent(baseDir: string, containerId: string) {
     ].join(" ");
 
     try {
-        const compileOutput = await execAsync(command, {
-            timeout: 10000, 
-        });
+        await execAsync(command, { timeout: COMPILE_TIMEOUT_MS });
     }
-    catch (err) {
-        console.log(err);
-        throw {
-            message: err.stderr
+    catch (err: any) {
+        if (err.killed) {
+            throw { message: `Compilation timed out (limit: ${COMPILE_TIMEOUT_MS / 1000}s)` };
         }
+        if (err.code === 137) {
+            throw { message: "Compilation killed: memory limit exceeded" };
+        }
+        throw { message: err.stderr || err.stdout || err.message || "Compilation failed" };
     }
 }
 
@@ -107,20 +107,24 @@ function processOutput({ stdout, stderr, expected_output, input }: any) {
 
     result.stdout = userOutput;
 
+    if (!testerOutput) {
+        throw new Error("Runner produced no result output");
+    }
+
     const testerObj = JSON.parse(testerOutput);
 
     result.actual_output = testerObj.actual_output;
     result.time_ms = testerObj.time_ms ?? null;
-    result.status = testerObj.status ?? lodash.isEqual(testerObj.actual_output, expected_output) ? "ACCEPTED" : "REJECTED";
+    result.memory_kb = testerObj.memory_kb ?? null;
+    const normalize = (s: string) => String(s).trim().replace(/\r\n/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n+$/, "");
+    result.status = testerObj.status ?? (normalize(testerObj.actual_output) === normalize(expected_output) ? "ACCEPTED" : "REJECTED");
     result.expected_output = expected_output;
     result.input = input;
 
     return result;
 }
 
-let a = 0
 async function runTestcase(baseDir: string, testcase: any, containerId: string) {
-
     fs.writeFileSync(`${baseDir}/input/a.in`, JSON.stringify(testcase));
 
     const command = [
@@ -129,23 +133,42 @@ async function runTestcase(baseDir: string, testcase: any, containerId: string) 
     ].join(" ");
 
     try {
-        console.log("startexec", a++)
         const { stdout, stderr } = await execAsync(command, {
-            timeout: 100000,
-            maxBuffer: 100*1024*1024,
+            timeout: TESTCASE_TIMEOUT_MS,
+            maxBuffer: TESTCASE_MAX_BUFFER_BYTES,
         });
-        console.log("endexec")
 
         return processOutput({ stdout, stderr, expected_output: testcase.output, input: testcase.input });
     }
-    catch (err) {
-        console.log(err);
+    catch (err: any) {
+        if (err.killed) {
+            return {
+                status: "TLE",
+                errorType: "Time limit exceeded",
+                error: `Execution exceeded ${TESTCASE_TIMEOUT_MS / 1000}s limit`,
+                stdout: err.stdout,
+                input: testcase.input,
+                expected_output: testcase.output,
+            };
+        }
+        if (err.code === 137) {
+            return {
+                status: "FAILED",
+                errorType: "Memory limit exceeded",
+                error: "Process was killed: memory limit exceeded",
+                stdout: err.stdout,
+                input: testcase.input,
+                expected_output: testcase.output,
+            };
+        }
         return {
             status: "FAILED",
             errorType: "Runtime error",
-            error: err.stderr,
-            stdout: err.stdout
-        }
+            error: err.stderr || err.message,
+            stdout: err.stdout,
+            input: testcase.input,
+            expected_output: testcase.output,
+        };
     }
 }
 
@@ -153,7 +176,7 @@ async function buildAndRun(baseDir: string, containerId: string) {
     try {
         await runCompileScriptIfPresent(baseDir, containerId);
     }
-    catch (err) {   
+    catch (err: any) {
         return {
             status: "FAILED",
             errorType: "Compilation error",
@@ -169,7 +192,7 @@ async function buildAndRun(baseDir: string, containerId: string) {
 
     for (const testcase of tests.testcases) {
         const testcaseResults = await runTestcase(baseDir, testcase, containerId);
-        
+
         results.testcases.push(testcaseResults);
 
         if (testcaseResults.status != "ACCEPTED") {
@@ -177,11 +200,14 @@ async function buildAndRun(baseDir: string, containerId: string) {
                 results[key] = testcaseResults[key];
             }
 
+            results.memory = Math.max(...results.testcases.map((t: any) => t.memory_kb ?? 0));
+
             return results;
         }
     }
 
     results.status = "ACCEPTED";
+    results.memory = Math.max(...results.testcases.map((t: any) => t.memory_kb ?? 0));
 
     return results;
 }
@@ -197,7 +223,7 @@ async function createContainerAndRun(baseDir: string) {
     }
 }
 
-const limit = pLimit(4);
+const limit = pLimit(Number(process.env.EXECUTOR_CONCURRENCY ?? 4));
 
 export async function execute(baseDir: string) {
     return limit(async () => {

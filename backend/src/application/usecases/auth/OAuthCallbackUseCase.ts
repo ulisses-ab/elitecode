@@ -44,8 +44,8 @@ export class OAuthCallbackUseCase {
         await this.createUserAndIdentity(oAuthUser);
 
     const token = this.jwtService.sign(
-      { sub: user.id }, 
-      user.role === Role.EXECUTION_ENGINE ? undefined : 60 * 60 * 24 // 24h
+      { sub: user.id },
+      user.role === Role.EXECUTION_ENGINE ? undefined : 60 * 60 * 24 * 30 // 30 days
     );
 
     console.log("JWT token: ", token);
