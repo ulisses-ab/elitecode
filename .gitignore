@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Redis snapshots
+dump.rdb
+
+# Build output
+dist
+
+# Vercel
+.vercel
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea
+.vscode/*
+!.vscode/extensions.json
