@@ -12,9 +12,9 @@ export function UserMenu() {
   if(!user) {
     return (
       <div className="flex space-x-2 items-center">
-        <Button variant="ghost" size="sm" className="text-amber-400/80 hover:text-amber-300 hover:bg-amber-400/5 font-medium text-xs tracking-wide">
+        {/*<Button variant="ghost" size="sm" className="text-amber-400/80 hover:text-amber-300 hover:bg-amber-400/5 font-medium text-xs tracking-wide">
           ✦ Premium
-        </Button>
+        </Button>*/}
         <SignInButton />
       </div>
     )

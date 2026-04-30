@@ -2,6 +2,8 @@ import { FetchExecutionFilesUseCase } from '../../application/usecases/execution
 import { SubmitExecutionResultsUseCase } from '../../application/usecases/execution/SubmitExecutionResultsUseCase';
 import { GetSubmissionUseCase } from '../../application/usecases/submissions/GetSubmissionUseCase';
 import { GetSubmissionWithResultsUseCase } from '../../application/usecases/submissions/GetSubmissionWithResultsUseCase'
+import { GetSubmissionCodeUseCase } from '../../application/usecases/submissions/GetSubmissionCodeUseCase';
+import { GetLeaderboardUseCase } from '../../application/usecases/submissions/GetLeaderboardUseCase';
 import { MakeSubmissionUseCase } from '../../application/usecases/submissions/MakeSubmissionUseCase';
 import { GetAllSubmissionsForProblemUseCase } from '../../application/usecases/submissions/GetAllSubmissionsForProblemUseCase';
 import { GetLatestSubmissionForProblemUseCase } from '../../application/usecases/submissions/GetLatestSubmissionForProblemUseCase';
@@ -18,6 +20,8 @@ export class SubmissionsController {
     private getSubmissionWithResultsUseCase: GetSubmissionWithResultsUseCase,
     private getAllSubmissionsForProblemUseCase: GetAllSubmissionsForProblemUseCase,
     private getLatestSubmissionForProblemUseCase: GetLatestSubmissionForProblemUseCase,
+    private getLeaderboardUseCase: GetLeaderboardUseCase,
+    private getSubmissionCodeUseCase: GetSubmissionCodeUseCase,
   ) {}
 
   public async makeSubmission(req: AuthenticatedRequest, res: Response) {
@@ -139,12 +143,37 @@ export class SubmissionsController {
     const userId = req.user!;
 
     try {
-      const output = await this.getLatestSubmissionForProblemUseCase.execute({ 
-        problemId, 
+      const output = await this.getLatestSubmissionForProblemUseCase.execute({
+        problemId,
         userId
       });
 
       return res.status(200).json(output);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  public async getLeaderboard(req: AuthenticatedRequest, res: Response) {
+    const { setupId } = req.params;
+
+    try {
+      const output = await this.getLeaderboardUseCase.execute({ setupId });
+      return res.status(200).json(output);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  public async getSubmissionCode(req: AuthenticatedRequest, res: Response) {
+    const { submissionId } = req.params;
+    const userId = req.user!;
+
+    try {
+      const { codeBuffer } = await this.getSubmissionCodeUseCase.execute({ submissionId, userId });
+      res.setHeader("Content-Type", "application/zip");
+      res.setHeader("Content-Disposition", `attachment; filename="submission-${submissionId}.zip"`);
+      return res.status(200).send(codeBuffer);
     } catch (error) {
       handleError(error, res);
     }

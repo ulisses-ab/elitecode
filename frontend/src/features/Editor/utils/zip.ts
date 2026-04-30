@@ -3,7 +3,7 @@ import type { FileNode } from "../store/types";
 import { getAncestorIdList } from "./tree";
 
 export async function zipToFileNodes(
-  zipData: File
+  zipData: Blob
 ): Promise<{ nodes: Record<string, FileNode>; rootId: string }> {
   const zip = await JSZip.loadAsync(zipData);
   const nodes: Record<string, FileNode> = {};

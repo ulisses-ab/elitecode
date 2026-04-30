@@ -1,0 +1,32 @@
+{
+  "testcases": [
+    {
+      "input": "PING\nPING hello\nSET foo bar\nGET foo\nGET nonexistent\nDEL foo\nEXISTS foo\n",
+      "output": "+PONG\n$5\nhello\n+OK\n$3\nbar\n$-1\n:1\n:0\n"
+    },
+    {
+      "input": "INCR counter\nINCR counter\nTYPE counter\nTYPE nonexistent\n",
+      "output": ":1\n:2\n+string\n+none\n"
+    },
+    {
+      "input": "LPUSH mylist c b a\nLLEN mylist\nLRANGE mylist 0 -1\nRPUSH mylist x y\nLRANGE mylist 0 -1\nLPOP mylist\nRPOP mylist\nLPOP mylist 2\nLRANGE mylist 0 -1\nLLEN mylist\nTYPE mylist\n",
+      "output": ":3\n:3\n*3\n$1\na\n$1\nb\n$1\nc\n:5\n*5\n$1\na\n$1\nb\n$1\nc\n$1\nx\n$1\ny\n$1\na\n$1\ny\n*2\n$1\nb\n$1\nc\n*1\n$1\nx\n:1\n+list\n"
+    },
+    {
+      "input": "SADD myset a b c d\nSADD myset a b\nSCARD myset\nSISMEMBER myset a\nSISMEMBER myset z\nSMEMBERS myset\nSREM myset a c\nSMEMBERS myset\nTYPE myset\n",
+      "output": ":4\n:0\n:4\n:1\n:0\n*4\n$1\na\n$1\nb\n$1\nc\n$1\nd\n:2\n*2\n$1\nb\n$1\nd\n+set\n"
+    },
+    {
+      "input": "SET mykey myvalue\nTTL mykey\nEXPIRE mykey 10\nTTL mykey\nDEBUG TICK 5\nTTL mykey\nDEBUG TICK 6\nTTL mykey\nGET mykey\nEXISTS mykey\n",
+      "output": "+OK\n:-1\n:1\n:10\n+OK\n:5\n+OK\n:-2\n$-1\n:0\n"
+    },
+    {
+      "input": "SET mystr hello\nLPUSH mystr world\nSADD mystr member\nLPUSH mylist a\nGET mylist\nINCR mylist\n",
+      "output": "+OK\n-WRONGTYPE Operation against a key holding the wrong kind of value\n-WRONGTYPE Operation against a key holding the wrong kind of value\n:1\n-WRONGTYPE Operation against a key holding the wrong kind of value\n-WRONGTYPE Operation against a key holding the wrong kind of value\n"
+    },
+    {
+      "input": "SET tempkey myval EX 5\nTTL tempkey\nGET tempkey\nDEBUG TICK 5\nGET tempkey\nEXISTS tempkey\nTTL tempkey\n",
+      "output": "+OK\n:5\n$5\nmyval\n+OK\n$-1\n:0\n:-2\n"
+    }
+  ]
+}

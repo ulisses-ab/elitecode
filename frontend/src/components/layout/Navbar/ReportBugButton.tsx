@@ -26,7 +26,7 @@ export function ReportBugButton() {
     setError(null);
 
     try {
-      await api.post("/feedback", { title: title.trim(), description: description.trim() });
+      await api.post("/feedback/bug", { title: title.trim(), description: description.trim() });
       setSent(true);
       setTimeout(() => {
         setOpen(false);
@@ -59,7 +59,7 @@ export function ReportBugButton() {
           size="icon"
           className="h-8 w-8 text-muted-foreground hover:text-foreground"
         >
-          <Bug size={15} />
+          <Bug className="size-[18px]" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

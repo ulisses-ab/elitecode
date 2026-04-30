@@ -26,6 +26,11 @@ export function createSubmissionsRoutes(
     submissionsController.getSubmissionWithResults.bind(submissionsController)
   );
 
+  router.get("/:submissionId/code",
+    authMiddleware,
+    submissionsController.getSubmissionCode.bind(submissionsController)
+  );
+
   router.get("/:submissionId",
     authMiddleware,
     submissionsController.getSubmission.bind(submissionsController)

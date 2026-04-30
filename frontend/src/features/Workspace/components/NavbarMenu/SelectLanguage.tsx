@@ -25,10 +25,10 @@ export function SelectLanguage() {
   return (
     <Select value={setupId} onValueChange={setSetup}>
       <SelectTrigger className="w-30">
-        <SelectValue placeholder="Template" />
+        <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem className="text-gray-500" value={"."}>Template</SelectItem>
+        <SelectItem className="text-muted-foreground/50" value={"."}>Language</SelectItem>
         {selectItems}
       </SelectContent>
     </Select>

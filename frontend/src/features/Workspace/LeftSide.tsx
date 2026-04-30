@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/tabs"
 import { useWorkspaceStore } from "./store"
 import { SubmissionsTab } from "./components/SubmissionsTab/SubmissionsTab";
+import { LeaderboardTab } from "./components/LeaderboardTab/LeaderboardTab";
 
 export function LeftSide() {
   const problem = useWorkspaceStore((state) => state.problem);
@@ -29,21 +30,28 @@ export function LeftSide() {
             <TabsTrigger value="submissions" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
               Submissions
             </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
+              Leaderboard
+            </TabsTrigger>
           </TabsList>
         </div>
 
         <div className="flex-1 min-h-0">
           <TabsContent className="mt-0 h-full" value="statement" forceMount>
-            {import.meta.env.VITE_ENVIRONMENT === "development" && (
+            {/*import.meta.env.VITE_ENVIRONMENT === "development" && (
               <div className="text-xs text-muted-foreground/50 px-3 py-1 font-mono">
                 {problem?.id} / {setup?.id || "no setup"}
               </div>
-            )}
+            )*/}
             <ProblemDisplayer problem={problem ?? undefined} />
           </TabsContent>
 
           <TabsContent className="mt-0 h-full overflow-y-auto" value="submissions" forceMount>
             <SubmissionsTab />
+          </TabsContent>
+
+          <TabsContent className="mt-0 h-full overflow-y-auto" value="leaderboard" forceMount>
+            <LeaderboardTab />
           </TabsContent>
         </div>
       </Tabs>

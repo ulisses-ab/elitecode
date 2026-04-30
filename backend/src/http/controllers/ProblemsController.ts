@@ -1,4 +1,6 @@
 import { CreateProblemUseCase } from '../../application/usecases/problems/CreateProblemUseCase';
+import { DeleteProblemUseCase } from '../../application/usecases/problems/DeleteProblemUseCase';
+import { UpdateProblemUseCase } from '../../application/usecases/problems/UpdateProblemUseCase';
 import { GetProblemUseCase } from '../../application/usecases/problems/GetProblemUseCase';
 import { ListProblemsUseCase } from '../../application/usecases/problems/ListProblemsUseCase';
 import { AddProblemSetupUseCase } from '../../application/usecases/problems/AddProblemSetupUseCase';
@@ -16,6 +18,8 @@ import { GetTemplateFileUseCase } from '../../application/usecases/problems/GetT
 export class ProblemsController {
   constructor(
     private createProblemUseCase: CreateProblemUseCase,
+    private deleteProblemUseCase: DeleteProblemUseCase,
+    private updateProblemUseCase: UpdateProblemUseCase,
     private getProblemUseCase: GetProblemUseCase,
     private listProblemsUseCase: ListProblemsUseCase,
     private addProblemSetupUseCase: AddProblemSetupUseCase,
@@ -187,13 +191,38 @@ export class ProblemsController {
 
     try {
       const output = await this.submitTemplateFileUseCase.execute({
-        problemId, 
-        setupId, 
+        problemId,
+        setupId,
         fileContent: file.buffer,
         userId,
       });
 
       return res.status(200).json(output);
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  public async deleteProblem(req: AuthenticatedRequest, res: Response) {
+    const { problemId } = req.params;
+    const userId = req.user!;
+
+    try {
+      await this.deleteProblemUseCase.execute({ problemId, userId });
+      return res.status(204).send();
+    } catch (error) {
+      handleError(error, res);
+    }
+  }
+
+  public async updateProblem(req: AuthenticatedRequest, res: Response) {
+    const { problemId } = req.params;
+    const userId = req.user!;
+    const { title, statement, difficulty, tags } = req.body;
+
+    try {
+      await this.updateProblemUseCase.execute({ problemId, userId, title, statement, difficulty, tags });
+      return res.status(204).send();
     } catch (error) {
       handleError(error, res);
     }

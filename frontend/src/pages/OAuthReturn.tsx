@@ -4,12 +4,10 @@ import { useAuthStore } from "@/features/auth/store";
 import { fetchUser } from "@/api/functions/user";
 
 export function OAuthReturn() {
-  // const [searchParams] = useSearchParams();
-  // const navigate = useNavigate();
-  // const login = useAuthStore((s) => s.login);
-  // const [error, setError] = useState<string | null>(null);
-
-  return (<div>aura</div>)
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const login = useAuthStore((s) => s.login);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const run = async () => {

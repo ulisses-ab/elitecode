@@ -38,7 +38,7 @@ export function Workspace({ problemId }: { problemId: string }) {
       >
         <LeftSide />
       </ResizablePanel>
-      <ResizableHandle className="bg-transparent w-2"/>
+      <ResizableHandle className="bg-transparent w-1.5"/>
       <ResizablePanel
         className="min-w-40 m-2.5 ml-1 rounded-xl border border-border/50 bg-card/40 overflow-hidden"
       >

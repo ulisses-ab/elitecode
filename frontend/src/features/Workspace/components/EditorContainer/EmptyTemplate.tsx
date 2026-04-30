@@ -17,9 +17,9 @@ export function EmptyTemplate() {
           <EmptyMedia variant="icon">
             <PiBracketsCurlyLight />
           </EmptyMedia>
-          <EmptyTitle>Select a template</EmptyTitle>
+          <EmptyTitle>Select a language</EmptyTitle>
           <EmptyDescription>
-            Choose a template to configure your workspace environment and start coding.
+            Choose a language to configure your workspace environment and start coding.
           </EmptyDescription>
         </EmptyHeader>
 

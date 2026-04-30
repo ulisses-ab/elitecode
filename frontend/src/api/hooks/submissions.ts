@@ -4,6 +4,9 @@ import {
   getAllSubmissionsForProblem,
   getLatestSubmissionForProblem,
   getSubmissionWithResults,
+  getSubmissionCode,
+  getLeaderboard,
+  type LeaderboardData,
 } from "../functions/submissions";
 import type { Submission } from "@/types/Submission";
 import { queryClient } from "../queryClient";
@@ -67,5 +70,19 @@ export function useSubmissionWithResults(id: string) {
   return useQuery<SubmissionWithResults | null, Error>({
     queryKey: ["submissions", id, "results"],
     queryFn: () => getSubmissionWithResults(id),
+  });
+}
+
+export function useSubmissionCode() {
+  return useMutation<Blob, Error, string>({
+    mutationFn: (id: string) => getSubmissionCode(id),
+  });
+}
+
+export function useLeaderboard(problemId: string | null, setupId: string | null) {
+  return useQuery<LeaderboardData, Error>({
+    queryKey: ["leaderboard", problemId, setupId],
+    queryFn: () => getLeaderboard(problemId!, setupId!),
+    enabled: !!problemId && !!setupId,
   });
 }

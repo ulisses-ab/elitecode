@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /problems
+
+# Private routes — no value in indexing
+Disallow: /profile
+Disallow: /oauth-return
+
+Sitemap: https://elitecode.pro/sitemap.xml

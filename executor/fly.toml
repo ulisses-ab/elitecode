@@ -1,0 +1,21 @@
+# fly.toml — Fly.io configuration for the EliteCode executor
+app = "elitecode-executor"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  EXECUTOR_DOCKER_IMAGE = "leetcode-executor:latest"
+  EXECUTOR_CONCURRENCY = "4"
+
+[experimental]
+  privileged = true
+
+[[vm]]
+  size = "performance-2x"
+  memory = "4gb"
+
+[[restart]]
+  policy = "always"
+  max_retries = 10

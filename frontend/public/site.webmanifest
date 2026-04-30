@@ -1,0 +1,16 @@
+{
+  "name": "EliteCode",
+  "short_name": "EliteCode",
+  "description": "Practice real-world software engineering problems",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#141620",
+  "theme_color": "#141620",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ]
+}

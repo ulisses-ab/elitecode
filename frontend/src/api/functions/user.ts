@@ -39,3 +39,8 @@ export async function fetchUserProfile(): Promise<UserProfile> {
   const response = await api.get("/users/me/profile");
   return response.data;
 }
+
+export async function updateUsername(handle: string): Promise<{ user: User }> {
+  const response = await api.patch("/users/me/handle", { handle });
+  return response.data;
+}

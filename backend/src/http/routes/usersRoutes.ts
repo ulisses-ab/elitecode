@@ -17,5 +17,10 @@ export function createUsersRoutes(
     userController.getUserProfile.bind(userController)
   );
 
+  router.patch("/me/handle",
+    authMiddleware,
+    userController.updateUsername.bind(userController)
+  );
+
   return router;
 }

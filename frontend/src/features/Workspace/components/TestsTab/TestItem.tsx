@@ -4,41 +4,65 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useState } from "react";
-
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { stringifyObject } from "./stringifyObject";
 import { cn } from "@/lib/utils";
+import { Copy, Check, Lock } from "lucide-react";
 
-function getStatusAttributes(status: string) {
+const DEFAULT_CODE_BLOCK_HEIGHT = 128; // px — matches old max-h-32
+const MIN_CODE_BLOCK_HEIGHT = 60;
+
+type StatusConfig = {
+  container: string;
+  label: string;
+  labelClass: string;
+  errorBorder: string;
+  errorBg: string;
+  errorLabel: string;
+  errorText: string;
+};
+
+function getStatusConfig(status: string): StatusConfig {
   switch (status) {
     case "ACCEPTED":
       return {
-        container: "border-green-500/30 bg-green-500/5",
-        accent: "bg-green-500",
-        badge: "bg-green-500 hover:bg-green-500",
+        container: "border-emerald-500/20 bg-emerald-500/[0.03]",
         label: "Accepted",
+        labelClass: "text-emerald-400",
+        errorBorder: "", errorBg: "", errorLabel: "", errorText: "",
       };
     case "REJECTED":
       return {
-        container: "border-red-500/30 bg-red-500/5",
-        accent: "bg-red-500",
-        badge: "bg-red-500 hover:bg-red-500",
+        container: "border-rose-500/20 bg-rose-500/[0.03]",
         label: "Wrong Answer",
+        labelClass: "text-rose-400",
+        errorBorder: "", errorBg: "", errorLabel: "", errorText: "",
+      };
+    case "TLE":
+      return {
+        container: "border-amber-500/20 bg-amber-500/[0.03]",
+        label: "Time Limit",
+        labelClass: "text-amber-400",
+        errorBorder: "border-amber-500/15",
+        errorBg: "bg-amber-500/[0.04]",
+        errorLabel: "text-amber-400/60",
+        errorText: "text-amber-300/80",
       };
     case "FAILED":
       return {
-        container: "border-red-500/30 bg-red-500/5",
-        accent: "bg-red-500",
-        badge: "bg-red-500 hover:bg-red-500",
+        container: "border-amber-500/20 bg-amber-500/[0.03]",
         label: "Error",
+        labelClass: "text-amber-400",
+        errorBorder: "border-amber-500/15",
+        errorBg: "bg-amber-500/[0.04]",
+        errorLabel: "text-amber-400/60",
+        errorText: "text-amber-300/80",
       };
     default:
       return {
-        container: "",
-        accent: "bg-muted",
-        badge: "",
+        container: "border-border/50",
         label: "",
+        labelClass: "",
+        errorBorder: "", errorBg: "", errorLabel: "", errorText: "",
       };
   }
 }
@@ -52,123 +76,206 @@ export function TestItem({
   index: number;
   results: any;
 }) {
+  const [codeBlockHeight, setCodeBlockHeight] = useState(DEFAULT_CODE_BLOCK_HEIGHT);
+
   function display(obj: any) {
     return typeof obj === "string" ? obj : stringifyObject(obj);
   }
 
-  const status = getStatusAttributes(results?.status);
+  function startResize(e: React.MouseEvent | React.TouchEvent) {
+    e.preventDefault();
+    const startY = "touches" in e ? e.touches[0].clientY : e.clientY;
+    const startHeight = codeBlockHeight;
+
+    document.body.style.userSelect = "none";
+
+    function onMove(e: MouseEvent | TouchEvent) {
+      const y = "touches" in e ? e.touches[0].clientY : e.clientY;
+      setCodeBlockHeight(Math.max(MIN_CODE_BLOCK_HEIGHT, startHeight + (y - startY)));
+    }
+
+    function onUp() {
+      document.body.style.userSelect = "";
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onUp);
+    }
+
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onUp);
+  }
+
+  const status = getStatusConfig(results?.status);
+  const isHidden = testcase.hidden === true;
+  const hasError = (results?.status === "FAILED" || results?.status === "TLE") && results?.error;
+  const hasStats = results?.time_ms != null || results?.memory_kb != null;
 
   return (
     <AccordionItem
       value={`testcase-${index}`}
       className={cn(
-        "relative overflow-hidden rounded-xl border transition-all duration-200",
-        "hover:shadow-md hover:border-primary/40",
+        "rounded-xl border bg-card/40 transition-colors duration-150",
         status.container
       )}
     >
-      {/* Left accent bar */}
-      <div
-        className={cn(
-          "absolute left-0 top-0 h-full w-1 transition-colors",
-          status.accent
-        )}
-      />
+      <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-transparent [&>svg]:text-muted-foreground/40">
+        <div className="flex w-full items-center justify-between pr-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-foreground/80">
+              Case {index + 1}
+            </span>
+            {isHidden && (
+              <span className="flex items-center gap-1 text-[10px] text-muted-foreground/40">
+                <Lock size={9} />
+                hidden
+              </span>
+            )}
+          </div>
 
-      <AccordionTrigger className="px-5 py-4 hover:no-underline">
-        <div className="flex w-full items-center justify-between">
-          <span className="text-sm font-semibold tracking-wide">
-            Test Case {index + 1}
-          </span>
-
-          {results?.status && (
-            <Badge className={cn("text-xs font-medium mr-4", status.badge)}>
-              {status.label}
-            </Badge>
-          )}
+          <div className="flex items-center gap-3">
+            {hasStats && (
+              <span className="text-[10px] font-mono tabular-nums text-muted-foreground/35">
+                {results.time_ms != null && `${Math.round(results.time_ms)} ms`}
+                {results.time_ms != null && results.memory_kb != null && " · "}
+                {results.memory_kb != null && `${results.memory_kb} KB`}
+              </span>
+            )}
+            {results?.status && (
+              <span className={cn("text-xs font-medium", status.labelClass)}>
+                {status.label}
+              </span>
+            )}
+          </div>
         </div>
       </AccordionTrigger>
 
-      <AccordionContent className="px-5 pb-5 pt-0">
-        <div className="grid gap-4 md:grid-cols-3">
-          {/* Input */}
-          <CodeBlock
-            title="Input"
-            content={display(testcase.input)}
-          />
+      <AccordionContent className="px-4 pb-3 pt-0">
+        {isHidden ? (
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+            <HiddenBlock title="Input" />
+            <HiddenBlock title="Expected" />
+            <HiddenBlock title="Output" />
+          </div>
+        ) : (<>
+          <div className="space-y-3">
+            {hasError && (
+              <div className={cn("rounded-lg border p-3", status.errorBorder, status.errorBg)}>
+                <p className={cn("text-[10px] uppercase tracking-widest font-medium mb-1.5", status.errorLabel)}>
+                  {results.errorType ?? "Error"}
+                </p>
+                <pre className={cn("text-xs font-mono whitespace-pre-wrap leading-relaxed", status.errorText)}>
+                  {results.error}
+                </pre>
+              </div>
+            )}
 
-          {/* Expected */}
-          <CodeBlock
-            title="Expected Output"
-            content={display(testcase.output)}
-          />
+            <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+              <CodeBlock title="Input" content={display(testcase.input)} maxHeight={codeBlockHeight} />
+              <CodeBlock title="Expected" content={display(testcase.output)} maxHeight={codeBlockHeight} />
+              <CodeBlock
+                title="Output"
+                content={results?.actual_output != null ? display(results.actual_output) : null}
+                maxHeight={codeBlockHeight}
+                highlight={
+                  results?.status === "REJECTED" ? "wrong" :
+                  results?.status === "ACCEPTED" ? "correct" : undefined
+                }
+              />
+            </div>
 
-          {/* Actual */}
-          <CodeBlock
-            title="Actual Output"
-            content={
-              results?.actual_output
-                ? display(results.actual_output)
-                : null
-            }
+            {results?.stdout && (
+              <CodeBlock title="Stdout" content={results.stdout} maxHeight={codeBlockHeight} mono />
+            )}
+
+          </div>
+          <div
+            onMouseDown={startResize}
+            onTouchStart={startResize}
+            className="h-3 -mx-4 mt-3 cursor-ns-resize rounded-b-xl"
           />
-        </div>
+        </>)}
       </AccordionContent>
     </AccordionItem>
+  );
+}
+
+function HiddenBlock({ title }: { title: string }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground/40 font-medium">
+        {title}
+      </span>
+      <div className="rounded-lg border border-border/50 bg-background/40 p-3 flex items-center gap-1.5 text-muted-foreground/25">
+        <Lock size={10} />
+        <span className="text-xs italic">hidden</span>
+      </div>
+    </div>
   );
 }
 
 function CodeBlock({
   title,
   content,
+  highlight,
+  maxHeight,
+  mono = true,
 }: {
   title: string;
-  content: any;
+  content: string | null;
+  highlight?: "correct" | "wrong";
+  maxHeight: number;
+  mono?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     if (!content) return;
-    await navigator.clipboard.writeText(String(content));
+    await navigator.clipboard.writeText(content);
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
 
-  return (
-    <div className="flex flex-col">
-      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        {title}
-      </h4>
+  const borderClass =
+    highlight === "correct"
+      ? "border-emerald-500/25"
+      : highlight === "wrong"
+      ? "border-rose-500/25"
+      : "border-border/50";
 
-      <div className="relative group">
-        <div className="rounded-md border bg-muted/40">
-          <ScrollArea className="h-50 px-3">
-            <pre className="h-2.5"></pre>
-            {content ? (
-              <pre className="text-xs font-mono whitespace-pre-wrap leading-relaxed">
-                {content}
-              </pre>
-            ) : (
-              <div className="text-xs italic text-muted-foreground">
-                No output
-              </div>
-            )}
-          </ScrollArea>
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[10px] uppercase tracking-widest text-muted-foreground/40 font-medium">
+        {title}
+      </span>
+
+      <div className={cn("relative group rounded-lg border bg-background/40", borderClass)}>
+        <div className="overflow-y-auto p-3" style={{ maxHeight }}>
+          {content ? (
+            <pre
+              className={cn(
+                "text-xs whitespace-pre-wrap leading-relaxed",
+                mono ? "font-mono" : "font-sans",
+                highlight === "correct" && "text-emerald-300/90",
+                highlight === "wrong" && "text-rose-300/90",
+                !highlight && "text-foreground/75"
+              )}
+            >
+              {content}
+            </pre>
+          ) : (
+            <span className="text-xs text-muted-foreground/25 italic">—</span>
+          )}
         </div>
 
         {content && (
           <button
             onClick={handleCopy}
-            className="
-              absolute top-2 right-2
-              text-xs px-2 py-1
-              rounded-md border bg-background/10 backdrop-blur
-              opacity-0 group-hover:opacity-100
-              transition-opacity
-              hover:bg-card
-            "
+            className="absolute top-2 right-2 flex items-center gap-1 px-1.5 py-1 rounded text-muted-foreground/40 hover:text-muted-foreground hover:bg-white/[0.06] opacity-0 group-hover:opacity-100 transition-all"
           >
-            {copied ? "Copied" : "Copy"}
+            {copied ? <Check size={11} /> : <Copy size={11} />}
           </button>
         )}
       </div>

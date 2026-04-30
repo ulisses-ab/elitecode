@@ -18,6 +18,10 @@ async function createContainer(baseDir: string) {
 
     const createCommand = [
         "docker run -d",
+    //    "--memory=1g",                                                                                                                                                                                                                      
+    //    "--memory-swap=1g",                                                                                                                                                                                                          
+    //    "--cpus=1.0",                                                                                                                                                                                                                       
+    //    "--pids-limit=128",
         "--network=none",
         `-v ${baseDir}/input:/workspace/input:ro`,
         `-v ${baseDir}/code:/workspace/code:ro`,
@@ -29,6 +33,15 @@ async function createContainer(baseDir: string) {
 
     const { stdout } = await execAsync(createCommand, { timeout: CREATE_CONTAINER_TIMEOUT_MS });
     const containerId = stdout.trim();
+
+    // With VFS storage driver the container can sit in "Created" for a moment after
+    // docker run -d returns. Poll until it transitions to "running".
+    const deadline = Date.now() + CREATE_CONTAINER_TIMEOUT_MS;
+    while (Date.now() < deadline) {
+        const { stdout: state } = await execAsync(`docker inspect --format '{{.State.Running}}' ${containerId}`);
+        if (state.trim() === "true") break;
+        await new Promise(r => setTimeout(r, 200));
+    }
 
     return containerId;
 }

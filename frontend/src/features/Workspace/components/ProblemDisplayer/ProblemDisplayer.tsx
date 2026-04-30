@@ -1,5 +1,6 @@
 import type { Problem } from "@/types/Problem";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { DifficultyTag } from "@/features/ProblemList/DifficultyTag";
 
 export function ProblemDisplayer({ problem }: { problem?: Problem }) {
@@ -15,11 +16,11 @@ export function ProblemDisplayer({ problem }: { problem?: Problem }) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="px-6 pt-6 pb-5 border-b border-border/40 shrink-0">
-        <div className="flex items-start justify-between gap-3 mb-3">
-          <h1 className="text-xl font-semibold leading-snug tracking-tight text-foreground">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h1 className="text-3xl font-semibold leading-snug tracking-tight text-foreground">
             {problem.title}
           </h1>
-          <div className="shrink-0 pt-0.5">
+          <div className="shrink-0 pt-0.5 scale-120">
             <DifficultyTag difficulty={problem.difficulty} />
           </div>
         </div>
@@ -31,9 +32,9 @@ export function ProblemDisplayer({ problem }: { problem?: Problem }) {
       </div>
 
       {/* Statement */}
-      <div className="flex-1 overflow-y-auto px-6 py-5">
+      <div className="flex-1 overflow-y-auto px-6 py-5 pb-20">
         <div className="markdown-body">
-          <ReactMarkdown>{problem.statement}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{problem.statement}</ReactMarkdown>
         </div>
       </div>
     </div>

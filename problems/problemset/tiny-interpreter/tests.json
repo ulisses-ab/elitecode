@@ -1,0 +1,44 @@
+{
+  "testcases": [
+    {
+      "input": "x = 10\ny = 3\nprint(x + y)\nprint(x - y)\nprint(x * y)\nprint(x / y)\nprint(x % y)\n",
+      "output": "13\n7\n30\n3\n1\n"
+    },
+    {
+      "input": "x = 7\nif x < 5:\n    print(1)\nelif x < 10:\n    print(2)\nelse:\n    print(3)\n",
+      "output": "2\n"
+    },
+    {
+      "input": "i = 0\ntotal = 0\nwhile i < 5:\n    total = total + i\n    i = i + 1\nprint(total)\nprint(i)\n",
+      "output": "10\n5\n"
+    },
+    {
+      "input": "def add(a, b):\n    return a + b\n\nprint(add(3, 4))\nprint(add(10, -3))\n",
+      "output": "7\n7\n"
+    },
+    {
+      "input": "def factorial(n):\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))\nprint(factorial(10))\n",
+      "output": "120\n3628800\n"
+    },
+    {
+      "input": "def fib(n):\n    if n <= 0:\n        return 0\n    if n == 1:\n        return 1\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(0))\nprint(fib(1))\nprint(fib(7))\nprint(fib(10))\n",
+      "output": "0\n1\n13\n55\n",
+      "hidden": true
+    },
+    {
+      "input": "def sum_to(n):\n    i = 1\n    total = 0\n    while i <= n:\n        total = total + i\n        i = i + 1\n    return total\n\nprint(sum_to(5))\nprint(sum_to(10))\nprint(sum_to(100))\n",
+      "output": "15\n55\n5050\n",
+      "hidden": true
+    },
+    {
+      "input": "def max2(a, b):\n    if a > b:\n        return a\n    return b\n\ndef max3(a, b, c):\n    return max2(max2(a, b), c)\n\nprint(max3(3, 7, 5))\nprint(max3(10, 4, 8))\nprint(max3(9, 9, 1))\nprint(max3(1, 1, 1))\n",
+      "output": "7\n10\n9\n1\n",
+      "hidden": true
+    },
+    {
+      "input": "def sum_range(n):\n    i = 1\n    s = 0\n    while i <= n:\n        s = s + i\n        i = i + 1\n    return s\n\ndef count_odds(n):\n    i = 1\n    count = 0\n    while i <= n:\n        if i % 2 != 0:\n            count = count + 1\n        i = i + 1\n    return count\n\ndef pow2(n):\n    result = 1\n    i = 0\n    while i < n:\n        result = result * 2\n        i = i + 1\n    return result\n\nprint(sum_range(100000))\nprint(count_odds(100000))\nprint(pow2(40))\n",
+      "output": "5000050000\n50000\n1099511627776\n",
+      "hidden": true
+    }
+  ]
+}

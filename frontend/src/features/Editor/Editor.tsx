@@ -17,6 +17,7 @@ const defaultNodes: Record<string, FileNode> = {
 export type EditorRef = {
   getCurrentZip: () => Promise<File>;
   reset: () => Promise<void>;
+  loadFromZip: (zip: Blob) => Promise<void>;
 };
 
 export const Editor = forwardRef<EditorRef, {
@@ -46,6 +47,10 @@ export const Editor = forwardRef<EditorRef, {
     },
     reset: async () => {
       await initialize();
+    },
+    loadFromZip: async (zip: Blob) => {
+      const { nodes, rootId } = await zipToFileNodes(zip);
+      initializeStore(persistanceKey, nodes, rootId);
     },
   }), [nodes, rootId]);
 

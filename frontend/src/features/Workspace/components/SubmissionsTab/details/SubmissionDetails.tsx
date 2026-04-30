@@ -1,8 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ChevronLeft, Clock, Cpu, Loader2 } from "lucide-react";
-import { useSubmissionWithResults } from "@/api/hooks/submissions";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ChevronLeft, Clock, Cpu, Loader2, FolderOpen } from "lucide-react";
+import { useSubmissionWithResults, useSubmissionCode } from "@/api/hooks/submissions";
 import { useWorkspaceStore } from "@/features/Workspace/store";
 import { useTests } from "@/api/hooks/problems";
 import { format } from "date-fns";
@@ -28,14 +35,26 @@ function totalMs(results: any): number {
 
 export function SubmissionDetails({ id, onClose }: SubmissionDetailsProps) {
   const { data, isLoading } = useSubmissionWithResults(id);
+  const { mutateAsync: fetchCode, isPending: isLoadingCode } = useSubmissionCode();
   const setSubmissionResults = useWorkspaceStore(state => state.setSubmissionResults);
+  const setRightTab = useWorkspaceStore(state => state.setRightTab);
+  const editor = useWorkspaceStore(state => state.editor);
   const problem  = useWorkspaceStore(state => state.problem);
   const setupId  = useWorkspaceStore(state => state.setup?.id);
   const { data: tests } = useTests(problem?.id!, setupId!);
 
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   useEffect(() => {
     if (data?.results) setSubmissionResults(data.results);
   }, [data?.results, setSubmissionResults]);
+
+  const handleConfirmLoad = async () => {
+    setConfirmOpen(false);
+    const zip = await fetchCode(id);
+    await editor?.loadFromZip(zip);
+    setRightTab("editor");
+  };
 
   if (isLoading || !data) {
     return (
@@ -54,79 +73,121 @@ export function SubmissionDetails({ id, onClose }: SubmissionDetailsProps) {
   const pct = totalTests > 0 ? (passedTests / totalTests) * 100 : 0;
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      {/* Back */}
-      <div className="flex items-center px-4 py-2 border-b border-border/30 shrink-0">
-        <button
-          onClick={onClose}
-          className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
-        >
-          <ChevronLeft size={14} />
-          Submissions
-        </button>
-      </div>
+    <>
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Load submission code?</DialogTitle>
+            <DialogDescription>
+              This will replace your current code in the editor with the code from this submission. Any unsaved changes will be lost.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmLoad}
+              disabled={isLoadingCode}
+              className="!bg-indigo-500/20 border-indigo-500/30 text-indigo-300 hover:!bg-indigo-500/30 hover:border-indigo-500/50 hover:text-indigo-200 transition-none"
+              variant="outline"
+            >
+              {isLoadingCode && <Loader2 size={13} className="animate-spin mr-1" />}
+              Load code
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      <div className="flex-1 px-5 py-5 space-y-5">
-        {/* Status hero */}
-        <div>
-          <p className={cn("text-2xl font-bold tracking-tight", theme.color)}>
-            {theme.label}
-          </p>
-          <p className="text-xs text-muted-foreground/50 mt-1">
-            {format(new Date(submission.submittedAt), "MMM d, yyyy · h:mm a")}
-          </p>
+      <div className="flex flex-col h-full overflow-y-auto">
+        {/* Back */}
+        <div className="flex items-center px-4 py-2 border-b border-border/30 shrink-0">
+          <button
+            onClick={onClose}
+            className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+          >
+            <ChevronLeft size={14} />
+            Submissions
+          </button>
         </div>
 
-        {/* Testcase progress */}
-        {totalTests > 0 && (
-          <div className="space-y-2">
-            <div className="flex justify-between text-xs text-muted-foreground/60">
-              <span>Test cases</span>
-              <span className="tabular-nums font-mono">{passedTests} / {totalTests}</span>
+        <div className="flex-1 px-5 py-5 space-y-5">
+          {/* Status hero */}
+          <div>
+            <p className={cn("text-2xl font-bold tracking-tight", theme.color)}>
+              {theme.label}
+            </p>
+            <p className="text-xs text-muted-foreground/50 mt-1">
+              {format(new Date(submission.submittedAt), "MMM d, yyyy · h:mm a")}
+            </p>
+          </div>
+
+          {/* Testcase progress */}
+          {totalTests > 0 && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-xs text-muted-foreground/60">
+                <span>Test cases</span>
+                <span className="tabular-nums font-mono">{passedTests} / {totalTests}</span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
+                <div
+                  className={cn("h-full rounded-full transition-all duration-500", theme.bar)}
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
             </div>
-            <div className="h-1.5 w-full rounded-full bg-white/[0.06] overflow-hidden">
-              <div
-                className={cn("h-full rounded-full transition-all duration-500", theme.bar)}
-                style={{ width: `${pct}%` }}
+          )}
+
+          {/* Stats — only on accepted */}
+          {submission.status === "ACCEPTED" && results && (
+            <div className="grid grid-cols-2 gap-2">
+              <StatCard
+                icon={<Clock size={13} />}
+                label="Runtime"
+                value={`${totalMs(results)} ms`}
+              />
+              <StatCard
+                icon={<Cpu size={13} />}
+                label="Memory"
+                value={results.memory ? `${results.memory} KB` : "N/A"}
               />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Stats — only on accepted */}
-        {submission.status === "ACCEPTED" && results && (
-          <div className="grid grid-cols-2 gap-2">
-            <StatCard
-              icon={<Clock size={13} />}
-              label="Runtime"
-              value={`${totalMs(results)} ms`}
-            />
-            <StatCard
-              icon={<Cpu size={13} />}
-              label="Memory"
-              value={results.memory ? `${results.memory} KB` : "N/A"}
-            />
-          </div>
-        )}
+          {/* Error output */}
+          {submission.status === "FAILED" && (
+            <div className="rounded-lg border border-rose-500/15 bg-rose-500/5 p-4">
+              <p className="text-[11px] text-rose-400/60 uppercase tracking-widest font-medium mb-2">
+                Error
+              </p>
+              <pre className="text-xs font-mono text-rose-300/80 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-60">
+                {results?.error ?? "Unknown error"}
+              </pre>
+            </div>
+          )}
 
-        {/* Error output */}
-        {submission.status === "FAILED" && (
-          <div className="rounded-lg border border-rose-500/15 bg-rose-500/5 p-4">
-            <p className="text-[11px] text-rose-400/60 uppercase tracking-widest font-medium mb-2">
-              Error
-            </p>
-            <pre className="text-xs font-mono text-rose-300/80 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-60">
-              {results?.error ?? "Unknown error"}
-            </pre>
-          </div>
-        )}
+          {/* Submission ID */}
+          <p className="text-[10px] font-mono text-muted-foreground/25 break-all">
+            {/*submission.id*/}
+          </p>
 
-        {/* Submission ID */}
-        <p className="text-[10px] font-mono text-muted-foreground/25 break-all">
-          {submission.id}
-        </p>
+          {/* Load code button */}
+          <Button
+            variant="outline"
+            onClick={() => setConfirmOpen(true)}
+            disabled={isLoadingCode}
+            className="w-full !bg-indigo-500/10 border-indigo-500/20 text-indigo-300/80 hover:!bg-indigo-500/20 hover:border-indigo-500/40 hover:text-indigo-200 transition-none gap-2"
+          >
+            {isLoadingCode
+              ? <Loader2 size={14} className="animate-spin" />
+              : <FolderOpen size={14} />
+            }
+            Load code in editor
+          </Button>
+
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

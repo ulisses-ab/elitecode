@@ -40,14 +40,14 @@ export function SignInDialog({ children }: SignInDialogProps) {
             <span className="text-sm">Continue with Google</span>
           </Button>
 
-          <Button
+          {/*<Button
             variant="outline"
             onClick={github}
             className="w-full flex items-center justify-center gap-2.5 h-10 border-border/60 bg-card/50 hover:bg-card transition-colors"
           >
             <FaGithub className="w-4 h-4" />
             <span className="text-sm">Continue with GitHub</span>
-          </Button>
+          </Button>*/}
         </div>
 
         <DialogFooter className="sm:justify-start">

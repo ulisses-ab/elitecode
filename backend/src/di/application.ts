@@ -4,6 +4,8 @@ import { SubmitExecutionResultsUseCase } from "../application/usecases/execution
 
 import { AddProblemSetupUseCase } from "../application/usecases/problems/AddProblemSetupUseCase";
 import { CreateProblemUseCase } from "../application/usecases/problems/CreateProblemUseCase";
+import { DeleteProblemUseCase } from "../application/usecases/problems/DeleteProblemUseCase";
+import { UpdateProblemUseCase } from "../application/usecases/problems/UpdateProblemUseCase";
 import { GetProblemUseCase } from "../application/usecases/problems/GetProblemUseCase";
 import { GetTestsForDisplayUseCase } from "../application/usecases/problems/GetTestsForDisplayUseCase";
 import { ListProblemsUseCase } from "../application/usecases/problems/ListProblemsUseCase";
@@ -12,12 +14,15 @@ import { SubmitRunnerFileUseCase } from "../application/usecases/problems/Submit
 
 import { GetAllSubmissionsForProblemUseCase } from "../application/usecases/submissions/GetAllSubmissionsForProblemUseCase";
 import { GetLatestSubmissionForProblemUseCase } from "../application/usecases/submissions/GetLatestSubmissionForProblemUseCase";
+import { GetLeaderboardUseCase } from "../application/usecases/submissions/GetLeaderboardUseCase";
+import { GetSubmissionCodeUseCase } from "../application/usecases/submissions/GetSubmissionCodeUseCase";
 import { GetSubmissionUseCase } from "../application/usecases/submissions/GetSubmissionUseCase";
 import { GetSubmissionWithResultsUseCase } from "../application/usecases/submissions/GetSubmissionWithResultsUseCase";
 import { MakeSubmissionUseCase } from "../application/usecases/submissions/MakeSubmissionUseCase";
 
 import { GetUserUseCase } from "../application/usecases/users/GetUserUseCase";
 import { GetUserProfileUseCase } from "../application/usecases/users/GetUserProfileUseCase";
+import { UpdateUsernameUseCase } from "../application/usecases/users/UpdateUsernameUseCase";
 
 import { SubmissionTimeoutService } from "../application/services/SubmissionTimeoutService";
 import { TemporarySubmissionCleanupService } from "../application/services/TemporarySubmissionCleanupService";
@@ -126,6 +131,15 @@ export const getLatestSubmissionForProblemUseCase = new GetLatestSubmissionForPr
   prismaSubmissionRepo
 );
 
+export const getLeaderboardUseCase = new GetLeaderboardUseCase(
+  prismaSubmissionRepo
+);
+
+export const getSubmissionCodeUseCase = new GetSubmissionCodeUseCase(
+  prismaSubmissionRepo,
+  s3ObjectStorageService,
+);
+
 export const getUserUseCase = new GetUserUseCase(
   prismaUserRepo
 );
@@ -133,6 +147,10 @@ export const getUserUseCase = new GetUserUseCase(
 export const getUserProfileUseCase = new GetUserProfileUseCase(
   prismaUserRepo,
   prismaSubmissionRepo
+);
+
+export const updateUsernameUseCase = new UpdateUsernameUseCase(
+  prismaUserRepo
 );
 
 export const submissionTimeoutService = new SubmissionTimeoutService(
@@ -147,4 +165,14 @@ export const temporarySubmissionCleanupService = new TemporarySubmissionCleanupS
 export const getTemplateFileUseCase = new GetTemplateFileUseCase(
   prismaProblemRepo,
   s3ObjectStorageService
-)
+);
+
+export const deleteProblemUseCase = new DeleteProblemUseCase(
+  prismaProblemRepo,
+  prismaUserRepo,
+);
+
+export const updateProblemUseCase = new UpdateProblemUseCase(
+  prismaProblemRepo,
+  prismaUserRepo,
+);

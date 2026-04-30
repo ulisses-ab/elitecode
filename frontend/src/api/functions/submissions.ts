@@ -51,3 +51,29 @@ export async function getSubmissionWithResults(id: string): Promise<SubmissionWi
   );
   return res.data;
 }
+
+export async function getSubmissionCode(id: string): Promise<Blob> {
+  const res = await api.get(`/submissions/${id}/code`, { responseType: "blob" });
+  return res.data;
+}
+
+export type LeaderboardRow = {
+  submissionId: string;
+  userId: string;
+  userHandle: string;
+  language: string;
+  runtimeMs: number | null;
+  memoryKb: number | null;
+  submittedAt: string;
+  rank: number;
+};
+
+export type LeaderboardData = {
+  byRuntime: LeaderboardRow[];
+  byMemory: LeaderboardRow[];
+};
+
+export async function getLeaderboard(problemId: string, setupId: string): Promise<LeaderboardData> {
+  const res = await api.get(`/problems/${problemId}/setups/${setupId}/leaderboard`);
+  return res.data;
+}

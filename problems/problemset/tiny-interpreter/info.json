@@ -1,0 +1,9 @@
+{
+  "title": "Tiny Interpreter",
+  "description": "",
+  "difficulty": "EXPERT",
+  "tags": [
+    "parsing",
+    "recursion"
+  ]
+}
