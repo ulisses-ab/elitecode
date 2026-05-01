@@ -49,7 +49,7 @@ export function Terms() {
 
           <section>
             <h2 className="text-foreground font-semibold mb-2">7. Contact</h2>
-            <p>Questions? Reach us at <a href="mailto:lovio.space@gmail.com" className="text-foreground underline underline-offset-2">lovio.space@gmail.com</a>.</p>
+            <p>Questions? Reach us at <a href="mailto:ulibicalho9@gmail.com" className="text-foreground underline underline-offset-2">ulibicalho9@gmail.com</a>.</p>
           </section>
         </div>
       </div>

@@ -89,18 +89,20 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         set({ problem: null, setup: null });
         return
       }
-      
+
       const storageKey = `workspace-storage-${problem.id}`;
       const savedData = localStorage.getItem(storageKey);
 
       if (savedData) {
-        set((state) => ({ 
-          problem, 
-          setup: state.problem?.setups.find((s) => s.id === savedData) || null,
-        }));
+        set({
+          problem,
+          setup: problem.setups.find((s) => s.id === savedData) ?? null,
+          leftTab: "statement",
+          rightTab: "editor",
+        });
       }
       else {
-        set({ problem, setup: problem.setups.length === 1 ? problem.setups[0] : null });
+        set({ problem, setup: problem.setups.length === 1 ? problem.setups[0] : null, leftTab: "statement", rightTab: "editor" });
       }
     },
 

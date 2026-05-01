@@ -1,6 +1,7 @@
 import { PrismaClient } from "../../generated/prisma/client";
 import { ISubmissionRepo } from "../../domain/repos/ISubmissionRepo";
 import { Submission } from "../../domain/entities/Submission";
+import { LeaderboardRow } from "../../domain/types/LeaderboardRow";
 
 export class PrismaSubmissionRepo implements ISubmissionRepo {
   constructor(private prisma: PrismaClient) {}
@@ -18,6 +19,8 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
         temporary: submission.temporary,
         submittedAt: submission.submittedAt,
         finishedAt: submission.finishedAt ?? null,
+        runtimeMs: submission.runtimeMs ?? null,
+        memoryKb: submission.memoryKb ?? null,
       },
       create: {
         id: submission.id,
@@ -30,6 +33,8 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
         temporary: submission.temporary,
         submittedAt: submission.submittedAt,
         finishedAt: submission.finishedAt ?? null,
+        runtimeMs: submission.runtimeMs ?? null,
+        memoryKb: submission.memoryKb ?? null,
       },
     });
   }
@@ -55,6 +60,24 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
       orderBy: { submittedAt: "desc" },
     });
     return submissions.map(this.map);
+  }
+
+  async findRecentWithDetailsByUserId(userId: string, limit: number): Promise<import("../../domain/repos/ISubmissionRepo").SubmissionWithDetails[]> {
+    const rows = await this.prisma.submission.findMany({
+      where: { userId, temporary: false },
+      orderBy: { submittedAt: "desc" },
+      take: limit,
+      include: {
+        problem: { select: { title: true, slug: true } },
+        setup:   { select: { language: true } },
+      },
+    });
+    return rows.map((r: any) => ({
+      ...this.map(r),
+      problemTitle: r.problem.title,
+      problemSlug:  r.problem.slug,
+      language:     r.setup.language,
+    }));
   }
 
   async findSolvedProblemDifficulties(userId: string): Promise<Array<{problemId: string, difficulty: string}>> {
@@ -123,6 +146,23 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
     });
   }
 
+  async findLeaderboard(setupId: string): Promise<LeaderboardRow[]> {
+    const rows = await this.prisma.submission.findMany({
+      where: { setupId, status: "ACCEPTED", temporary: false },
+      include: { user: { select: { handle: true } }, setup: { select: { language: true } } },
+      orderBy: { submittedAt: "asc" },
+    });
+    return rows.map((r: any) => ({
+      submissionId: r.id,
+      userId: r.userId,
+      userHandle: r.user.handle,
+      language: r.setup.language,
+      runtimeMs: r.runtimeMs ?? null,
+      memoryKb: r.memoryKb ?? null,
+      submittedAt: r.submittedAt,
+    }));
+  }
+
   private map = (s: any): Submission => ({
     id: s.id,
     userId: s.userId,
@@ -134,5 +174,7 @@ export class PrismaSubmissionRepo implements ISubmissionRepo {
     temporary: s.temporary,
     submittedAt: s.submittedAt,
     finishedAt: s.finishedAt,
+    runtimeMs: s.runtimeMs ?? null,
+    memoryKb: s.memoryKb ?? null,
   });
 }

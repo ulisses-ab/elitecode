@@ -42,12 +42,17 @@ export class CreateProblemUseCase {
       throw new AppError(ErrorCode.INVALID_INPUT, "Statement cannot be empty");
     }
 
+    const id = this.uuidService.generate();
+    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + "-" + id.slice(0, 6);
+
     const problem: Problem = {
-      id: this.uuidService.generate(),
+      id,
+      slug,
       title,
       statement,
       difficulty,
       description,
+      tags: [],
       setups: [],
       defaultTestsFileKey: null,
       creatorId: userId,

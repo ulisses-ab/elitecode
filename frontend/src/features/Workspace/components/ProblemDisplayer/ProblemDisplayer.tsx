@@ -15,9 +15,9 @@ export function ProblemDisplayer({ problem }: { problem?: Problem }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="px-6 pt-6 pb-5 border-b border-border/40 shrink-0">
+      <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-4 sm:pb-5 border-b border-border/40 shrink-0">
         <div className="flex items-start justify-between gap-3 mb-1">
-          <h1 className="text-3xl font-semibold leading-snug tracking-tight text-foreground">
+          <h1 className="text-2xl sm:text-3xl font-semibold leading-snug tracking-tight text-foreground">
             {problem.title}
           </h1>
           <div className="shrink-0 pt-0.5 scale-120">
@@ -32,7 +32,7 @@ export function ProblemDisplayer({ problem }: { problem?: Problem }) {
       </div>
 
       {/* Statement */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 pb-20">
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-5 pb-20">
         <div className="markdown-body">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{problem.statement}</ReactMarkdown>
         </div>

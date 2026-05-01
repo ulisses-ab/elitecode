@@ -52,7 +52,9 @@ export function SubmissionDetails({ id, onClose }: SubmissionDetailsProps) {
   const handleConfirmLoad = async () => {
     setConfirmOpen(false);
     const zip = await fetchCode(id);
-    await editor?.loadFromZip(zip);
+    const currentEditor = useWorkspaceStore.getState().editor;
+    if (!currentEditor) return;
+    await currentEditor.loadFromZip(zip);
     setRightTab("editor");
   };
 
@@ -101,13 +103,13 @@ export function SubmissionDetails({ id, onClose }: SubmissionDetailsProps) {
 
       <div className="flex flex-col h-full overflow-y-auto">
         {/* Back */}
-        <div className="flex items-center px-4 py-2 border-b border-border/30 shrink-0">
+        <div className="flex items-center px-3 py-2 border-b border-border/30 shrink-0">
           <button
             onClick={onClose}
-            className="flex items-center gap-1 text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-md text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-white/[0.07] transition-colors"
           >
-            <ChevronLeft size={14} />
-            Submissions
+            <ChevronLeft size={16} strokeWidth={2.5} />
+            All Submissions
           </button>
         </div>
 

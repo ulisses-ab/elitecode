@@ -27,6 +27,7 @@ export const Editor = forwardRef<EditorRef, {
   const nodes = useEditorStore((state) => state.nodes);
   const rootId = useEditorStore((state) => state.rootId);
   const initializeStore = useEditorStore((state) => state.initialize);
+  const resetStore = useEditorStore((state) => state.reset);
 
   async function initialize() {
     const { nodes, rootId } = 
@@ -50,7 +51,7 @@ export const Editor = forwardRef<EditorRef, {
     },
     loadFromZip: async (zip: Blob) => {
       const { nodes, rootId } = await zipToFileNodes(zip);
-      initializeStore(persistanceKey, nodes, rootId);
+      resetStore(nodes, rootId);
     },
   }), [nodes, rootId]);
 
@@ -60,7 +61,8 @@ export const Editor = forwardRef<EditorRef, {
       className="flex-1 overflow-auto border-none"
     >
       <ResizablePanel
-        className="min-w-36 max-w-64"
+        minSize={8.5}
+        maxSize={50}
         defaultSize={18}
       >
         <FileExplorer />

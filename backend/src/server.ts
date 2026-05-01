@@ -3,7 +3,7 @@ import { json } from "body-parser";
 import path from "path";
 import cors from "cors";
 
-import { problemsRoutes, authRoutes, usersRoutes, submissionsRoutes } from "./di/http"
+import { problemsRoutes, authRoutes, usersRoutes, submissionsRoutes, feedbackRoutes } from "./di/http"
 import { submissionTimeoutService, temporarySubmissionCleanupService } from "./di/application"
 import { useSwagger } from "./infra/swagger/useSwagger";
 
@@ -43,7 +43,8 @@ async function bootstrap() {
   app.use("/api/auth", authRoutes);
   app.use("/api/users", usersRoutes);
   app.use("/api/submissions", submissionsRoutes);
-
+  app.use("/api/feedback", feedbackRoutes);
+  
   const frontendDistPath = path.join(__dirname, "../../frontend/dist");
   app.use(express.static(frontendDistPath));
   app.use((req, res) => {

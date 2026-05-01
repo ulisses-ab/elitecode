@@ -117,7 +117,7 @@ export function TestItem({
     <AccordionItem
       value={`testcase-${index}`}
       className={cn(
-        "rounded-xl border bg-card/40 transition-colors duration-150",
+        "group rounded-xl border bg-card/40 transition-colors duration-150",
         status.container
       )}
     >
@@ -152,9 +152,9 @@ export function TestItem({
         </div>
       </AccordionTrigger>
 
-      <AccordionContent className="px-4 pb-3 pt-0">
+      <AccordionContent className="px-4 pb-0 pt-0">
         {isHidden ? (
-          <div className="grid gap-3 grid-cols-1 sm:grid-cols-3">
+          <div className="pb-3 grid gap-3 grid-cols-1 sm:grid-cols-3">
             <HiddenBlock title="Input" />
             <HiddenBlock title="Expected" />
             <HiddenBlock title="Output" />
@@ -194,8 +194,10 @@ export function TestItem({
           <div
             onMouseDown={startResize}
             onTouchStart={startResize}
-            className="h-3 -mx-4 mt-3 cursor-ns-resize rounded-b-xl"
-          />
+            className="group-data-[state=closed]:hidden mt-3 h-3 flex items-center justify-center cursor-row-resize rounded-b-xl"
+          >
+            <div className="w-6 h-px rounded-full bg-white/[0.10] group-hover:bg-white/[0.22] transition-colors" />
+          </div>
         </>)}
       </AccordionContent>
     </AccordionItem>

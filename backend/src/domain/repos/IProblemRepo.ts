@@ -4,6 +4,7 @@ import { Language } from "../types/Language";
 
 export interface IProblemRepo {
   findById(id: string): Promise<Problem | null>;
+  findBySlug(slug: string): Promise<Problem | null>;
   findFiltered(
     limit?: number,
     offset?: number,
@@ -12,5 +13,6 @@ export interface IProblemRepo {
     language?: Language,
   ): Promise<Problem[]>;
 
-  save(problem: Problem):  Promise<void>;
+  save(problem: Problem): Promise<void>;
+  deleteById(id: string): Promise<void>;
 }

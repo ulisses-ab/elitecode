@@ -11,9 +11,12 @@ export function NodeContent({ node }: {
 }) {
   const setRenamingNode = useEditorStore((state) => state.setRenamingNode);
   const renameNode = useEditorStore((state) => state.renameNode);
+  const deleteNode = useEditorStore((state) => state.deleteNode);
   const isRenaming = useEditorStore((state) => state.renamingNodeId === node.id);
   const [ renameVal, setRenameVal ] = useState(node.data.name);
   const nodes = useEditorStore((s) => s.nodes);
+  // true when this node was just created and has never been named
+  const isNewNode = useRef(node.data.name === "");
 
   const renamingInvalid = useMemo(() => {
     if (!isRenaming) return false;
@@ -35,40 +38,43 @@ export function NodeContent({ node }: {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if(isRenaming) {
+    if (isRenaming) {
       setRenameVal(node.data.name);
-      node.edit();
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         inputRef.current?.focus();
         inputRef.current?.select();
-      }, 400)
+      });
     }
   }, [isRenaming]);
-  
-  const submitRename = () => {
-    const val = inputRef.current?.value!;
 
+  const cancelRename = () => {
     setRenamingNode(null);
+    setRenameVal(node.data.name);
+    if (isNewNode.current) deleteNode(node.data.id);
+  };
 
-    if(renamingInvalid) {
+  const submitRename = () => {
+    const val = inputRef.current?.value ?? "";
+
+    if (!val.trim() || renamingInvalid) {
+      cancelRename();
       return;
     }
 
-    node.submit(val);
+    setRenamingNode(null);
+    isNewNode.current = false;
     renameNode(node.data.id, val);
-  }
+  };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if(e.key === "Enter") {
-      if(renamingInvalid) return; 
+    e.stopPropagation();
+    if (e.key === "Enter") {
+      if (renamingInvalid) return;
       submitRename();
+    } else if (e.key === "Escape") {
+      cancelRename();
     }
-    else if(e.key === "Escape") {
-      node.reset();
-      setRenamingNode(null);
-      setRenameVal(node.data.name);
-    }
-  }
+  };
 
   const fileIconName = 
     isRenaming ?
@@ -77,11 +83,13 @@ export function NodeContent({ node }: {
   return (
     <>
       {node.isInternal ? (
-        node.isOpen ? (
-          <ChevronDown size={14} className="text-muted-foreground/50 shrink-0" />
-        ) : (
-          <ChevronRight size={14} className="text-muted-foreground/50 shrink-0" />
-        )
+        <>
+          {node.isOpen ? (
+            <ChevronDown size={14} className="text-muted-foreground/50 shrink-0" />
+          ) : (
+            <ChevronRight size={14} className="text-muted-foreground/50 shrink-0" />
+          )}
+        </>
       ) : (
         <FileIcon name={fileIconName!} isFolder={false} />
       )}
@@ -92,7 +100,16 @@ export function NodeContent({ node }: {
         value={renameVal}
         onChange={(e) => setRenameVal(e.target.value)}
         onKeyDown={onKeyDown}
-        onBlur={submitRename}
+        onBlur={() => {
+          // Defer by one rAF so our useEffect focus-rAF can run first.
+          // If Radix's onCloseAutoFocus briefly stole focus, our rAF will
+          // have re-focused the input and activeElement === input → skip.
+          // If input is hidden, a keyboard handler already submitted → skip.
+          requestAnimationFrame(() => {
+            if (!inputRef.current || inputRef.current.hidden || document.activeElement === inputRef.current) return;
+            submitRename();
+          });
+        }}
         hidden={!isRenaming}
         onClick={(e) => e.stopPropagation()}
         className="px-1 py-0 border flex-1 min-w-0 border-indigo-500/60 rounded outline-none bg-[#0f1117] text-foreground text-sm"

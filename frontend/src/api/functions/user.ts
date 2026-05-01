@@ -25,11 +25,15 @@ export type UserProfile = {
     solvedEasy: number;
     solvedMedium: number;
     solvedHard: number;
+    solvedExpert: number;
     totalSolved: number;
   };
   recentSubmissions: Array<{
     id: string;
     problemId: string;
+    problemTitle: string;
+    problemSlug: string;
+    language: string;
     status: string;
     submittedAt: string;
   }>;

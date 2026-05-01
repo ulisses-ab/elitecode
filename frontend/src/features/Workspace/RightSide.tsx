@@ -34,11 +34,11 @@ export function RightSide() {
           {rightTab === "editor" && <UploadDownload />}
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0">
           <TabsContent className="mt-0 h-full" value="editor" forceMount>
             <EditorContainer />
           </TabsContent>
-          <TabsContent value="tests" forceMount>
+          <TabsContent className="h-full overflow-y-auto" value="tests" forceMount>
             <TestsTab />
           </TabsContent>
         </div>

@@ -13,4 +13,6 @@ export type Submission = {
   temporary: boolean,
   submittedAt: Date,
   finishedAt?: Date | null,
+  runtimeMs?: number | null,
+  memoryKb?: number | null,
 }

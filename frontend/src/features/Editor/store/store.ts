@@ -140,7 +140,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       return {
         nodes,
         selectedNodeId: id,
-        activeFileId: type === "file" ? id : state.activeFileId,
+        activeFileId: state.activeFileId,
         renamingNodeId: id,
       };
     });

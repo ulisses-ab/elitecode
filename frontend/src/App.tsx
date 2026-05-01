@@ -6,6 +6,8 @@ import { Profile } from "./pages/Profile";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from "./api/queryClient";
 import { OAuthReturn } from "./pages/OAuthReturn";
+import { Terms } from "./pages/Terms";
+import { Privacy } from "./pages/Privacy";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +16,8 @@ const App: React.FC = () => {
         <Router>
           <Routes>
             <Route path="/oauth-return" element={<OAuthReturn />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/problems/:id" element={<ProblemDetail />} />
             <Route path="/problems" element={<Problems />} />

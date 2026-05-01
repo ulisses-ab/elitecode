@@ -7,7 +7,6 @@ import { Role } from "../../../domain/types/Role";
 import { IUserRepo } from "../../../domain/repos/IUserRepo";
 import { mapSubmissionToDTO } from "../../mappers/mapSubmissionToDTO";
 import { SubmissionDTO } from "../../dtos/SubmissionDTO";
-import { IRunnerRepo } from "../../../domain/repos/IRunnerRepo";
 
 export type FetchExecutionFilesInput = {
   userId: string;

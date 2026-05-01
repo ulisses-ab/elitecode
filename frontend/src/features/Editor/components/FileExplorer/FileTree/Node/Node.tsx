@@ -36,7 +36,7 @@ export function Node({ node, style, dragHandle }: {
           ...style,
           paddingLeft: style.paddingLeft*0.8 + 6,
         }}
-        className={`flex flex-1 items-center gap-1 h-6 text-sm cursor-pointer transition-colors
+        className={`flex flex-1 items-center gap-1 h-6 text-sm cursor-pointer transition-colors outline-none
           ${isSelected ? "bg-indigo-500/20 text-indigo-200" : "hover:bg-white/[0.05] text-foreground/70 hover:text-foreground/90"}`}
         onClick={onClick}
         onContextMenu={onRightClick}

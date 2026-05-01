@@ -12,6 +12,9 @@ export type GetUserProfileInput = {
 export type SubmissionSummary = {
   id: string;
   problemId: string;
+  problemTitle: string;
+  problemSlug: string;
+  language: string;
   status: string;
   submittedAt: Date;
 };
@@ -25,6 +28,7 @@ export type GetUserProfileOutput = {
     solvedEasy: number;
     solvedMedium: number;
     solvedHard: number;
+    solvedExpert: number;
     totalSolved: number;
   };
   recentSubmissions: SubmissionSummary[];
@@ -42,7 +46,7 @@ export class GetUserProfileUseCase {
     const user = await this.userRepo.findById(userId);
     if (!user) throw new AppError(ErrorCode.USER_NOT_FOUND, "User not found");
 
-    const submissions = await this.submissionRepo.findNonTemporaryByUserId(userId);
+    const submissions = await this.submissionRepo.findRecentWithDetailsByUserId(userId, 10);
     const solvedDifficulties = await this.submissionRepo.findSolvedProblemDifficulties(userId);
 
     const accepted = submissions.filter(s => s.status === "ACCEPTED");
@@ -51,6 +55,7 @@ export class GetUserProfileUseCase {
     const solvedEasy = solvedDifficulties.filter(d => d.difficulty === "EASY").length;
     const solvedMedium = solvedDifficulties.filter(d => d.difficulty === "MEDIUM").length;
     const solvedHard = solvedDifficulties.filter(d => d.difficulty === "HARD").length;
+    const solvedExpert = solvedDifficulties.filter(d => d.difficulty === "EXPERT").length;
 
     return {
       user: mapUserToDTO(user),
@@ -61,11 +66,15 @@ export class GetUserProfileUseCase {
         solvedEasy,
         solvedMedium,
         solvedHard,
+        solvedExpert,
         totalSolved: solvedDifficulties.length,
       },
-      recentSubmissions: submissions.slice(0, 10).map(s => ({
+      recentSubmissions: submissions.map(s => ({
         id: s.id,
         problemId: s.problemId,
+        problemTitle: s.problemTitle,
+        problemSlug: s.problemSlug,
+        language: s.language,
         status: s.status,
         submittedAt: s.submittedAt,
       })),

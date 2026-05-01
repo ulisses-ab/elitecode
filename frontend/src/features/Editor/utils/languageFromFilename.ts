@@ -1,0 +1,78 @@
+const EXT_MAP: Record<string, string> = {
+  py:     "python",
+  js:     "javascript",
+  jsx:    "javascript",
+  mjs:    "javascript",
+  cjs:    "javascript",
+  ts:     "typescript",
+  tsx:    "typescript",
+  mts:    "typescript",
+  cpp:    "cpp",
+  cc:     "cpp",
+  cxx:    "cpp",
+  "c++":  "cpp",
+  h:      "cpp",
+  hpp:    "cpp",
+  hxx:    "cpp",
+  c:      "c",
+  cs:     "csharp",
+  java:   "java",
+  go:     "go",
+  rs:     "rust",
+  rb:     "ruby",
+  php:    "php",
+  swift:  "swift",
+  kt:     "kotlin",
+  kts:    "kotlin",
+  scala:  "scala",
+  r:      "r",
+  sh:     "shell",
+  bash:   "shell",
+  zsh:    "shell",
+  fish:   "shell",
+  ps1:    "powershell",
+  sql:    "sql",
+  html:   "html",
+  htm:    "html",
+  css:    "css",
+  scss:   "scss",
+  less:   "less",
+  json:   "json",
+  jsonc:  "json",
+  yaml:   "yaml",
+  yml:    "yaml",
+  toml:   "ini",
+  md:     "markdown",
+  mdx:    "markdown",
+  xml:    "xml",
+  svg:    "xml",
+  lua:    "lua",
+  pl:     "perl",
+  pm:     "perl",
+  ex:     "elixir",
+  exs:    "elixir",
+  erl:    "erlang",
+  hrl:    "erlang",
+  hs:     "haskell",
+  lhs:    "haskell",
+  clj:    "clojure",
+  cljs:   "clojure",
+  tf:     "hcl",
+  dockerfile: "dockerfile",
+};
+
+const BASENAME_MAP: Record<string, string> = {
+  dockerfile:      "dockerfile",
+  "dockerfile.dev": "dockerfile",
+  makefile:        "makefile",
+  "cmakelists.txt": "cmake",
+};
+
+export function languageFromFilename(filename: string): string {
+  const lower = filename.toLowerCase();
+
+  if (BASENAME_MAP[lower]) return BASENAME_MAP[lower];
+
+  const ext = lower.split(".").pop() ?? "";
+  return EXT_MAP[ext] ?? "plaintext";
+}

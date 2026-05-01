@@ -28,7 +28,6 @@ export function SelectLanguage() {
         <SelectValue placeholder="Language" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem className="text-muted-foreground/50" value={"."}>Language</SelectItem>
         {selectItems}
       </SelectContent>
     </Select>

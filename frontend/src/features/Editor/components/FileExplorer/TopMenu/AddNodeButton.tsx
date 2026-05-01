@@ -5,11 +5,12 @@ export function AddNodeButton({ type }: { type: "folder" | "file" }) {
   const nodes = useEditorStore((state) => state.nodes);
   const rootId = useEditorStore((state) => state.rootId);
   const selectedNodeId = useEditorStore((state) => state.selectedNodeId);
+  const renamingNodeId = useEditorStore((state) => state.renamingNodeId);
   const createNode = useEditorStore((state) => state.createNode);
-
 
   const handleAdd = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (renamingNodeId) return;
 
     const selectedNode = 
       selectedNodeId ?

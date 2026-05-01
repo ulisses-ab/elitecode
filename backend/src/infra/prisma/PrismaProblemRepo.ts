@@ -19,6 +19,14 @@ export class PrismaProblemRepo implements IProblemRepo {
     return problem ? this.map(problem) : null;
   }
 
+  async findBySlug(slug: string): Promise<Problem | null> {
+    const problem = await this.prisma.problem.findUnique({
+      where: { slug },
+      include: { setups: true },
+    });
+    return problem ? this.map(problem) : null;
+  }
+
   async findFiltered(
     limit?: number,
     offset?: number,
@@ -74,6 +82,7 @@ export class PrismaProblemRepo implements IProblemRepo {
         statement: problem.statement,
         difficulty: problem.difficulty,
         description: problem.description,
+        tags: problem.tags,
         creatorId: problem.creatorId,
         updatedAt: problem.updatedAt,
         defaultTestsFileKey: problem.defaultTestsFileKey,
@@ -104,10 +113,12 @@ export class PrismaProblemRepo implements IProblemRepo {
       },
       create: {
         id: problem.id,
+        slug: problem.slug,
         title: problem.title,
         statement: problem.statement,
         description: problem.description,
         difficulty: problem.difficulty,
+        tags: problem.tags,
         creatorId: problem.creatorId,
         createdAt: problem.createdAt,
         updatedAt: problem.updatedAt,
@@ -131,11 +142,17 @@ export class PrismaProblemRepo implements IProblemRepo {
     });
   }
 
+  async deleteById(id: string): Promise<void> {
+    await this.prisma.problem.delete({ where: { id } });
+  }
+
   private map = (p: any): Problem => ({
     id: p.id,
+    slug: p.slug,
     title: p.title,
     statement: p.statement,
     difficulty: p.difficulty,
+    tags: p.tags ?? [],
     creatorId: p.creatorId,
     createdAt: p.createdAt,
     updatedAt: p.updatedAt,

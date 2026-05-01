@@ -6,8 +6,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAuthStore } from "@/features/auth/store";
 import { cn } from "@/lib/utils";
 import { Check, Pencil, X } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useNavbarStore } from "@/stores/useNavbarStore";
 
 const STATUS_CONFIG: Record<string, { label: string; dot: string; text: string }> = {
   ACCEPTED: { label: "Accepted",     dot: "bg-emerald-400", text: "text-emerald-400" },
@@ -47,6 +48,9 @@ function formatDate(dateStr: string) {
 }
 
 export function Profile() {
+  const setNavbarCenter = useNavbarStore(s => s.setNavbarCenter);
+  useEffect(() => { setNavbarCenter(null); }, []);
+
   const user    = useAuthStore(s => s.user);
   const setUser = useAuthStore(s => s.setUser);
   const { data, isLoading }  = useUserProfile();
@@ -163,7 +167,7 @@ export function Profile() {
               ) : (
                 <div className="flex items-center gap-2 group">
                   <h1 className="text-2xl font-bold tracking-tight">{user.handle}</h1>
-                  <button onClick={startEditing} className="p-1 rounded opacity-0 group-hover:opacity-60 hover:!opacity-100 hover:bg-white/10 text-muted-foreground transition-all" title="Edit username">
+                  <button onClick={startEditing} className="p-1 rounded opacity-40 hover:opacity-100 hover:bg-white/10 text-muted-foreground transition-all" title="Edit username">
                     <Pencil size={13} />
                   </button>
                 </div>
@@ -237,7 +241,7 @@ export function Profile() {
                 return (
                   <Link
                     key={sub.id}
-                    to={`/problems/${sub.problemId}`}
+                    to={`/problems/${sub.problemSlug}`}
                     className="flex items-center gap-3 px-5 py-3.5 hover:bg-white/[0.02] transition-colors group"
                   >
                     <span className={cn("w-1.5 h-1.5 rounded-full shrink-0", s?.dot ?? "bg-muted-foreground/30")} />

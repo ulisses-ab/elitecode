@@ -3,11 +3,13 @@ import { ProblemSetup } from "./ProblemSetup"
 
 export type Problem = {
   id: string,
+  slug: string,
   title: string,
   description: string,
-  statement: string, 
+  statement: string,
   difficulty: Difficulty,
 
+  tags: string[],
   setups: ProblemSetup[],
   defaultTestsFileKey?: string | null,
 

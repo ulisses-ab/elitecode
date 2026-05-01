@@ -8,7 +8,7 @@ export type GetProblemInput = {
   problemId: string,
 }
 
-export type GetProblemOutput = { 
+export type GetProblemOutput = {
   problem: ProblemDTO,
 }
 
@@ -20,7 +20,10 @@ export class GetProblemUseCase {
   public async execute(input: GetProblemInput): Promise<GetProblemOutput> {
     const { problemId } = input;
 
-    const problem = await this.problemRepo.findById(problemId);
+    const problem =
+      (await this.problemRepo.findBySlug(problemId)) ??
+      (await this.problemRepo.findById(problemId));
+
     if (!problem) {
       throw new AppError(ErrorCode.PROBLEM_NOT_FOUND, "Problem not found");
     }
