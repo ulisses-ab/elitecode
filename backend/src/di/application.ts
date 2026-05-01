@@ -27,16 +27,25 @@ import { UpdateUsernameUseCase } from "../application/usecases/users/UpdateUsern
 import { SubmissionTimeoutService } from "../application/services/SubmissionTimeoutService";
 import { TemporarySubmissionCleanupService } from "../application/services/TemporarySubmissionCleanupService";
 
-import { 
-  jwtService, 
-  uuidService, 
-  s3ObjectStorageService, 
-  bullMqExecutionQueueService, 
+import { ListResourcesUseCase } from "../application/usecases/resources/ListResourcesUseCase";
+import { ListAllResourcesUseCase } from "../application/usecases/resources/ListAllResourcesUseCase";
+import { CreateResourceUseCase } from "../application/usecases/resources/CreateResourceUseCase";
+import { UpdateResourceUseCase } from "../application/usecases/resources/UpdateResourceUseCase";
+import { DeleteResourceUseCase } from "../application/usecases/resources/DeleteResourceUseCase";
+import { LinkResourceUseCase } from "../application/usecases/resources/LinkResourceUseCase";
+import { UnlinkResourceUseCase } from "../application/usecases/resources/UnlinkResourceUseCase";
+
+import {
+  jwtService,
+  uuidService,
+  s3ObjectStorageService,
+  bullMqExecutionQueueService,
   bcryptHashingService,
   prismaUserRepo,
   prismaProblemRepo,
   prismaSubmissionRepo,
   prismaOAuthIdentityRepo,
+  prismaResourceRepo,
   oAuthService,
 } from "./infra";
 import { SubmitTemplateFileUseCase } from "../application/usecases/problems/SubmitTemplateFileUseCase";
@@ -176,3 +185,11 @@ export const updateProblemUseCase = new UpdateProblemUseCase(
   prismaProblemRepo,
   prismaUserRepo,
 );
+
+export const listResourcesUseCase = new ListResourcesUseCase(prismaResourceRepo);
+export const listAllResourcesUseCase = new ListAllResourcesUseCase(prismaResourceRepo);
+export const createResourceUseCase = new CreateResourceUseCase(prismaResourceRepo, prismaUserRepo, uuidService);
+export const updateResourceUseCase = new UpdateResourceUseCase(prismaResourceRepo, prismaUserRepo);
+export const deleteResourceUseCase = new DeleteResourceUseCase(prismaResourceRepo, prismaUserRepo);
+export const linkResourceUseCase = new LinkResourceUseCase(prismaResourceRepo, prismaUserRepo);
+export const unlinkResourceUseCase = new UnlinkResourceUseCase(prismaResourceRepo, prismaUserRepo);

@@ -3,7 +3,7 @@ import { json } from "body-parser";
 import path from "path";
 import cors from "cors";
 
-import { problemsRoutes, authRoutes, usersRoutes, submissionsRoutes, feedbackRoutes } from "./di/http"
+import { problemsRoutes, authRoutes, usersRoutes, submissionsRoutes, feedbackRoutes, resourcesRoutes } from "./di/http"
 import { submissionTimeoutService, temporarySubmissionCleanupService } from "./di/application"
 import { useSwagger } from "./infra/swagger/useSwagger";
 
@@ -40,6 +40,7 @@ async function bootstrap() {
   useSwagger(app);
   
   app.use("/api/problems", problemsRoutes);
+  app.use("/api/resources", resourcesRoutes);
   app.use("/api/auth", authRoutes);
   app.use("/api/users", usersRoutes);
   app.use("/api/submissions", submissionsRoutes);

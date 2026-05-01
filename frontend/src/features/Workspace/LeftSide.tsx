@@ -8,6 +8,7 @@ import {
 import { useWorkspaceStore } from "./store"
 import { SubmissionsTab } from "./components/SubmissionsTab/SubmissionsTab";
 import { LeaderboardTab } from "./components/LeaderboardTab/LeaderboardTab";
+import { ResourcesTab } from "./components/ResourcesTab/ResourcesTab";
 
 export function LeftSide() {
   const problem = useWorkspaceStore((state) => state.problem);
@@ -27,6 +28,9 @@ export function LeftSide() {
             <TabsTrigger value="statement" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
               Statement
             </TabsTrigger>
+            <TabsTrigger value="resources" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
+              Resources
+            </TabsTrigger>
             <TabsTrigger value="submissions" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
               Submissions
             </TabsTrigger>
@@ -44,6 +48,10 @@ export function LeftSide() {
               </div>
             )*/}
             <ProblemDisplayer problem={problem ?? undefined} />
+          </TabsContent>
+
+          <TabsContent className="mt-0 h-full overflow-y-auto" value="resources" forceMount>
+            <ResourcesTab />
           </TabsContent>
 
           <TabsContent className="mt-0 h-full overflow-y-auto" value="submissions" forceMount>

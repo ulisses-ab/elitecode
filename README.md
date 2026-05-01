@@ -1,4 +1,4 @@
-# ObsoLeet
+# EliteCode
 
 A self-hosted coding practice platform. Users pick a problem, write code in the browser, and get real execution feedback — pass/fail per test case, runtime, and memory.
 

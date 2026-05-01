@@ -6,6 +6,7 @@ import { PrismaProblemRepo } from "../infra/prisma/PrismaProblemRepo";
 import { PrismaSubmissionRepo } from "../infra/prisma/PrismaSubmissionRepo";
 import { PrismaUserRepo } from "../infra/prisma/PrismaUserRepo";
 import { PrismaOAuthIdentityRepo } from "../infra/prisma/PrismaOAuthIdentityRepo";
+import { PrismaResourceRepo } from "../infra/prisma/PrismaResourceRepo";
 
 import { BullMQExecutionQueueService } from "../infra/services/BullMQExecutionQueueService";
 import { BcryptHashingService } from "../infra/services/BcryptHashingService";
@@ -22,6 +23,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 export const prismaProblemRepo = new PrismaProblemRepo(prisma);
+export const prismaResourceRepo = new PrismaResourceRepo(prisma);
 export const prismaSubmissionRepo = new PrismaSubmissionRepo(prisma);
 export const prismaUserRepo = new PrismaUserRepo(prisma);
 export const prismaOAuthIdentityRepo = new PrismaOAuthIdentityRepo(prisma);

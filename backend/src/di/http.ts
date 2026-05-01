@@ -25,6 +25,13 @@ import {
   submitRunnerFileUseCase,
   submitTemplateFileUseCase,
   getTemplateFileUseCase,
+  listResourcesUseCase,
+  listAllResourcesUseCase,
+  createResourceUseCase,
+  updateResourceUseCase,
+  deleteResourceUseCase,
+  linkResourceUseCase,
+  unlinkResourceUseCase,
 } from "./application";
 
 import { jwtService } from "./infra"
@@ -34,6 +41,7 @@ import { AuthController } from "../http/controllers/AuthController"
 import { ProblemsController } from "../http/controllers/ProblemsController"
 import { SubmissionsController } from "../http/controllers/SubmissionsController"
 import { UsersController } from "../http/controllers/UsersController"
+import { ResourcesController } from "../http/controllers/ResourcesController"
 import { createAuthMiddleware } from "../http/middleware/authMiddleware";
 import { createSubmissionRateLimiter } from "../http/middleware/submissionRateLimitMiddleware";
 
@@ -42,6 +50,7 @@ import { createAuthRoutes } from "../http/routes/authRoutes"
 import { createProblemsRoutes } from "../http/routes/problemsRoutes"
 import { createUsersRoutes } from "../http/routes/usersRoutes"
 import { createFeedbackRoutes } from "../http/routes/feedbackRoutes"
+import { createResourcesRoutes } from "../http/routes/resourcesRoutes"
 
 import { oAuthService } from "./infra";
 
@@ -115,3 +124,15 @@ export const authRoutes = createAuthRoutes(
 );
 
 export const feedbackRoutes = createFeedbackRoutes();
+
+export const resourcesController = new ResourcesController(
+  listAllResourcesUseCase,
+  listResourcesUseCase,
+  createResourceUseCase,
+  updateResourceUseCase,
+  deleteResourceUseCase,
+  linkResourceUseCase,
+  unlinkResourceUseCase,
+);
+
+export const resourcesRoutes = createResourcesRoutes(authMiddleware, resourcesController);
