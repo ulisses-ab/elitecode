@@ -58,7 +58,7 @@ export function ProblemList() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-2 items-center">
         <Input
-          placeholder="Search problems..."
+          placeholder="Search challenges..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="flex-1 bg-card/50 border-border/60 focus-visible:border-border placeholder:text-muted-foreground/50"

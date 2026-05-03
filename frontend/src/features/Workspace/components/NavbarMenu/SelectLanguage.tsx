@@ -17,9 +17,9 @@ export function SelectLanguage() {
   let selectItems = null;
 
   if(problem) {
-    selectItems = problem.setups.map((setup) => 
-      <SelectItem value={setup.id}>{setup.language}</SelectItem>
-    )
+    selectItems = [...problem.setups]
+      .sort((a, b) => a.language.localeCompare(b.language))
+      .map((setup) => <SelectItem value={setup.id}>{setup.language}</SelectItem>)
   }
 
   return (
