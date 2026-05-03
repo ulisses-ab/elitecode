@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "@/features/auth/store";
 
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: (import.meta.env.VITE_BACKEND_URL as string).replace(/\/+$/, ""),
 });
 
 api.interceptors.request.use((config) => {

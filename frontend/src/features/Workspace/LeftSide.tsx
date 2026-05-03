@@ -9,12 +9,23 @@ import { useWorkspaceStore } from "./store"
 import { SubmissionsTab } from "./components/SubmissionsTab/SubmissionsTab";
 import { LeaderboardTab } from "./components/LeaderboardTab/LeaderboardTab";
 import { ResourcesTab } from "./components/ResourcesTab/ResourcesTab";
+import { useResources } from "@/api/hooks/resources";
+import { useEffect } from "react";
 
 export function LeftSide() {
   const problem = useWorkspaceStore((state) => state.problem);
   const leftTab = useWorkspaceStore((state) => state.leftTab);
   const setLeftTab = useWorkspaceStore((state) => state.setLeftTab);
-  const setup = useWorkspaceStore((state) => state.setup);  
+
+  const { data: resources } = useResources(problem?.id);
+  const hasResources = !!resources && resources.length > 0;
+
+  // If the active tab is "resources" but this problem has none, fall back to statement
+  useEffect(() => {
+    if (leftTab === "resources" && resources !== undefined && !hasResources) {
+      setLeftTab("statement");
+    }
+  }, [hasResources, resources, leftTab, setLeftTab]);
 
   return (
     <div className="h-full flex flex-col">
@@ -28,9 +39,11 @@ export function LeftSide() {
             <TabsTrigger value="statement" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
               Statement
             </TabsTrigger>
-            <TabsTrigger value="resources" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
-              Resources
-            </TabsTrigger>
+            {hasResources && (
+              <TabsTrigger value="resources" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
+                Resources
+              </TabsTrigger>
+            )}
             <TabsTrigger value="submissions" className="text-xs font-medium px-3 h-9 rounded-none border-b-2 border-transparent data-[state=active]:border-foreground/80 data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground">
               Submissions
             </TabsTrigger>
@@ -42,17 +55,14 @@ export function LeftSide() {
 
         <div className="flex-1 min-h-0">
           <TabsContent className="mt-0 h-full" value="statement" forceMount>
-            {/*import.meta.env.VITE_ENVIRONMENT === "development" && (
-              <div className="text-xs text-muted-foreground/50 px-3 py-1 font-mono">
-                {problem?.id} / {setup?.id || "no setup"}
-              </div>
-            )*/}
             <ProblemDisplayer problem={problem ?? undefined} />
           </TabsContent>
 
-          <TabsContent className="mt-0 h-full overflow-y-auto" value="resources" forceMount>
-            <ResourcesTab />
-          </TabsContent>
+          {hasResources && (
+            <TabsContent className="mt-0 h-full overflow-y-auto" value="resources" forceMount>
+              <ResourcesTab />
+            </TabsContent>
+          )}
 
           <TabsContent className="mt-0 h-full overflow-y-auto" value="submissions" forceMount>
             <SubmissionsTab />

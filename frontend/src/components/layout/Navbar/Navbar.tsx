@@ -35,6 +35,11 @@ export function Navbar({ title = "EliteCode", className, ...props }: NavbarProps
             Problems
           </Button>
         </Link>
+        {/*<Link to="/resources" className="hidden sm:block">
+          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-normal text-sm">
+            Resources
+          </Button>
+        </Link>*/}
       </div>
 
       <div className="flex flex-1 justify-center">

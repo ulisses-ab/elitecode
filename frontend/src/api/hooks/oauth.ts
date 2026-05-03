@@ -15,7 +15,8 @@ export function useOAuth() {
       returnURL: location
     }));
 
-    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/${provider}?state=${state}`;
+    const base = (import.meta.env.VITE_BACKEND_URL as string).replace(/\/+$/, "");
+    window.location.href = `${base}/auth/${provider}?state=${state}`;
   }
 
 

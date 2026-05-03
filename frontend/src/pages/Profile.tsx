@@ -122,11 +122,6 @@ export function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-indigo-500/[0.05] rounded-full blur-[120px]" />
-        <div className="absolute top-[5%] left-[15%] w-[350px] h-[250px] bg-violet-500/[0.03] rounded-full blur-[80px]" />
-        <div className="absolute top-[8%] right-[15%] w-[300px] h-[200px] bg-indigo-400/[0.03] rounded-full blur-[70px]" />
-      </div>
 
       <Navbar />
 

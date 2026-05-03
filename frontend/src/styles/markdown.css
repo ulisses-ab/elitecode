@@ -5,7 +5,8 @@
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   font-size: 13.5px;
   line-height: 1.75;
-  color: oklch(0.80 0.01 268);
+  color: #b9b9b9;
+  color: oklch(0.80 0 0);
 }
 
 /* Headings */
@@ -14,7 +15,8 @@
 .markdown-body h3,
 .markdown-body h4 {
   font-family: 'Inter', system-ui, sans-serif;
-  color: oklch(0.95 0.005 268);
+  color: #f4f4f4;
+  color: oklch(0.95 0 0);
   font-weight: 600;
   border-bottom: none;
   margin-top: 1.75em;
@@ -29,13 +31,14 @@
 .markdown-body p {
   margin-top: 0;
   margin-bottom: 1em;
-  color: oklch(0.78 0.01 268);
+  color: #b4b4b4;
+  color: oklch(0.78 0 0);
 }
 
 /* Code blocks */
 .markdown-body pre {
-  background-color: #191b24;
-  border: 1px solid oklch(1 0 0 / 8%);
+  background-color: #1e1e1e;
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 8px;
   padding: 14px 16px;
   font-size: 12.5px;
@@ -47,17 +50,19 @@
   background: transparent;
   padding: 0;
   font-size: inherit;
-  color: oklch(0.82 0.012 268);
+  color: #bebebe;
+  color: oklch(0.82 0 0);
 }
 
 /* Inline code */
 .markdown-body code {
-  background-color: oklch(1 0 0 / 7%);
-  border: 1px solid oklch(1 0 0 / 9%);
+  background-color: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 4px;
   padding: 1px 6px;
   font-size: 12px;
-  color: oklch(0.78 0.06 268);
+  color: #bebebe;
+  color: oklch(0.82 0 0);
   font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
 }
 
@@ -75,7 +80,8 @@
 
 .markdown-body li {
   margin-bottom: 0.35rem;
-  color: oklch(0.78 0.01 268);
+  color: #b4b4b4;
+  color: oklch(0.78 0 0);
 }
 
 .markdown-body li + li {
@@ -84,12 +90,14 @@
 
 /* Blockquotes */
 .markdown-body blockquote {
-  border-left: 3px solid oklch(0.55 0.04 268);
-  background: oklch(1 0 0 / 3%);
+  border-left: 3px solid #424242;
+  border-left: 3px solid oklch(0.40 0 0);
+  background: rgba(255,255,255,0.03);
   border-radius: 0 6px 6px 0;
   padding: 10px 16px;
   margin: 1em 0;
-  color: oklch(0.65 0.01 268);
+  color: #7d7d7d;
+  color: oklch(0.65 0 0);
 }
 
 .markdown-body blockquote p {
@@ -99,12 +107,14 @@
 
 /* Links */
 .markdown-body a {
-  color: oklch(0.70 0.12 268);
+  color: #c5c5c5;
+  color: oklch(0.85 0 0);
   text-decoration: none;
 }
 
 .markdown-body a:hover {
-  color: oklch(0.80 0.14 268);
+  color: #f8f8f8;
+  color: oklch(0.97 0 0);
   text-decoration: underline;
 }
 
@@ -117,33 +127,36 @@
 }
 
 .markdown-body th {
-  background: oklch(1 0 0 / 5%);
-  color: oklch(0.90 0.008 268);
+  background: rgba(255,255,255,0.05);
+  color: #dadada;
+  color: oklch(0.90 0 0);
   font-weight: 600;
   text-align: left;
   padding: 8px 12px;
-  border: 1px solid oklch(1 0 0 / 9%);
+  border: 1px solid rgba(255,255,255,0.09);
 }
 
 .markdown-body td {
   padding: 7px 12px;
-  border: 1px solid oklch(1 0 0 / 8%);
-  color: oklch(0.78 0.01 268);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #b4b4b4;
+  color: oklch(0.78 0 0);
 }
 
 .markdown-body tr:nth-child(even) td {
-  background: oklch(1 0 0 / 2%);
+  background: rgba(255,255,255,0.02);
 }
 
 /* Horizontal rule */
 .markdown-body hr {
   border: none;
-  border-top: 1px solid oklch(1 0 0 / 9%);
+  border-top: 1px solid rgba(255,255,255,0.09);
   margin: 1.5em 0;
 }
 
 /* Strong / em */
 .markdown-body strong {
-  color: oklch(0.90 0.008 268);
+  color: #dadada;
+  color: oklch(0.90 0 0);
   font-weight: 600;
 }

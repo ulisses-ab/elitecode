@@ -112,7 +112,7 @@ export function NodeContent({ node }: {
         }}
         hidden={!isRenaming}
         onClick={(e) => e.stopPropagation()}
-        className="px-1 py-0 border flex-1 min-w-0 border-indigo-500/60 rounded outline-none bg-[#0f1117] text-foreground text-sm"
+        className="px-1 py-0 border flex-1 min-w-0 border-indigo-500/60 rounded outline-none bg-[#141414] text-foreground text-sm"
       />
 
       <span hidden={isRenaming}>{node.data.name}</span>

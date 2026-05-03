@@ -29,6 +29,7 @@ export function NodeContextMenu({ node, children }: RowContextMenuProps) {
     : (nodes[node.data.id]?.parentId ?? null);
 
   const creatingNewRef = useRef(false);
+  const renamingRef = useRef(false);
 
   const handleNewFile = () => {
     if (renamingNodeId) return;
@@ -52,6 +53,7 @@ export function NodeContextMenu({ node, children }: RowContextMenuProps) {
 
   const handleRename = (e: React.MouseEvent) => {
     e.stopPropagation();
+    renamingRef.current = true;
     setRenamingNode(node.data.id);
   };
 
@@ -63,6 +65,10 @@ export function NodeContextMenu({ node, children }: RowContextMenuProps) {
         onCloseAutoFocus={(e) => {
           if (creatingNewRef.current) {
             creatingNewRef.current = false;
+            e.preventDefault();
+          }
+          if (renamingRef.current) {
+            renamingRef.current = false;
             e.preventDefault();
           }
         }}

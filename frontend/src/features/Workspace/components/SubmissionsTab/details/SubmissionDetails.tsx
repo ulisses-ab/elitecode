@@ -9,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ChevronLeft, Clock, Cpu, Loader2, FolderOpen } from "lucide-react";
+import { CopyToClipboardButton } from "@/components/ui/CopyToClipboardButton";
 import { useSubmissionWithResults, useSubmissionCode } from "@/api/hooks/submissions";
 import { useWorkspaceStore } from "@/features/Workspace/store";
 import { useTests } from "@/api/hooks/problems";
@@ -159,9 +160,18 @@ export function SubmissionDetails({ id, onClose }: SubmissionDetailsProps) {
           {/* Error output */}
           {submission.status === "FAILED" && (
             <div className="rounded-lg border border-rose-500/15 bg-rose-500/5 p-4">
-              <p className="text-[11px] text-rose-400/60 uppercase tracking-widest font-medium mb-2">
-                Error
-              </p>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[11px] text-rose-400/60 uppercase tracking-widest font-medium">
+                  Error
+                </p>
+                <CopyToClipboardButton
+                  text={results?.error ?? "Unknown error"}
+                  variant="ghost"
+                  size="icon"
+                  showText={false}
+                  className="h-6 w-6 text-rose-400/50 hover:text-rose-300 hover:bg-rose-500/10"
+                />
+              </div>
               <pre className="text-xs font-mono text-rose-300/80 whitespace-pre-wrap leading-relaxed overflow-x-auto max-h-60">
                 {results?.error ?? "Unknown error"}
               </pre>

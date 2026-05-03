@@ -8,19 +8,19 @@ function handleMount(editor: any, monaco: any) {
     base: "vs-dark",
     inherit: true,
     rules: [
-      { token: "comment", foreground: "4a5068", fontStyle: "italic" },
+      { token: "comment", foreground: "555555", fontStyle: "italic" },
     ],
     colors: {
-      "editor.background":              "#191b24",
-      "editor.foreground":              "#dde1f0",
+      "editor.background":              "#1e1e1e",
+      "editor.foreground":              "#d4d4d4",
       "editor.lineHighlightBackground": "#ffffff07",
-      "editor.selectionBackground":     "#3b4bdb38",
-      "editorLineNumber.foreground":    "#3e4260",
-      "editorLineNumber.activeForeground": "#6b7280",
-      "editorCursor.foreground":        "#818cf8",
-      "editorIndentGuide.background1":  "#22253a",
-      "editorBracketMatch.background":  "#3b4bdb28",
-      "editorBracketMatch.border":      "#4f5fd0",
+      "editor.selectionBackground":     "#ffffff15",
+      "editorLineNumber.foreground":    "#3d3d3d",
+      "editorLineNumber.activeForeground": "#6b6b6b",
+      "editorCursor.foreground":        "#d4d4d4",
+      "editorIndentGuide.background1":  "#252525",
+      "editorBracketMatch.background":  "#ffffff10",
+      "editorBracketMatch.border":      "#6b6b6b",
       "scrollbarSlider.background":     "#ffffff0d",
       "scrollbarSlider.hoverBackground":"#ffffff18",
       "scrollbarSlider.activeBackground":"#ffffff22",
@@ -36,7 +36,7 @@ export function CodeEditor() {
 
   if (!activeFileId) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#191b24]">
+      <div className="flex h-full items-center justify-center bg-[#1e1e1e]">
         <p className="text-xs text-muted-foreground/40">Select a file to edit</p>
       </div>
     );
@@ -58,7 +58,7 @@ export function CodeEditor() {
           minimap: { enabled: false },
           fontSize: 14,
           tabSize: 2,
-          scrollBeyondLastLine: false,
+          scrollBeyondLastLine: true,
         }}
       />
     </>

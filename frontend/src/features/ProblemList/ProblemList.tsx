@@ -54,7 +54,7 @@ export function ProblemList() {
   }, [search, difficulty, activeTag, fuse, problems]);
 
   return (
-    <div className="space-y-4 w-full max-w-3xl">
+    <div className="space-y-4 w-full">
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-2 items-center">
         <Input

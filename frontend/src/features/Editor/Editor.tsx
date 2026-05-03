@@ -68,7 +68,7 @@ export const Editor = forwardRef<EditorRef, {
         <FileExplorer />
       </ResizablePanel>
       <ResizableHandle className="bg-white/[0.04] w-px hover:bg-white/10 transition-colors" />
-      <ResizablePanel className="bg-[#191b24]">
+      <ResizablePanel className="bg-[#1e1e1e]">
         <CodeEditor />
       </ResizablePanel>
     </ResizablePanelGroup>

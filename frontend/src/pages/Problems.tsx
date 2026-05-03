@@ -20,32 +20,37 @@ export function Problems() {
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-background">
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-15%] left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-indigo-500/[0.05] rounded-full blur-[120px]" />
-        <div className="absolute top-[5%] left-[20%] w-[400px] h-[300px] bg-violet-500/[0.03] rounded-full blur-[80px]" />
-        <div className="absolute top-[8%] right-[18%] w-[350px] h-[250px] bg-indigo-400/[0.03] rounded-full blur-[70px]" />
-      </div>
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, oklch(1 0 0 / 0.045) 1px, transparent 1px)",
+          backgroundSize: "28px 28px",
+        }}
+      />
 
       <Navbar />
 
-      <div className="relative mt-16 sm:mt-24 mb-10 sm:mb-14 text-center px-4 flex flex-col items-center">
-        <h1 className="text-[40px] sm:text-[56px] md:text-[64px] font-extrabold tracking-[-0.04em] leading-[1.1] bg-gradient-to-b from-foreground via-foreground/85 to-foreground/30 bg-clip-text text-transparent mb-5">
-          Build real systems.<br />Not toy problems.
-        </h1>
+      <div className="relative w-full max-w-3xl mx-auto px-4 pt-20 pb-16 flex flex-col gap-10">
+        <div className="space-y-4">
+          <h1 className="text-[46px] sm:text-[54px] font-bold tracking-[-0.025em] leading-[1.08]">
+            <span className="text-foreground">Build real systems.</span>
+            <br />
+            <span className="text-foreground/80">Not toy problems.</span>
+          </h1>
+          <p className="text-[16px] text-muted-foreground/50 leading-relaxed max-w-sm">
+            A clean, focused environment for practicing software engineering.
+          </p>
+        </div>
 
-        <p className="text-muted-foreground/70 text-[15px] max-w-xs mx-auto leading-relaxed">
-          A clean, focused environment for practicing software engineering.
-        </p>
-      </div>
+        <div className="border-t border-border/40" />
 
-      <div className="relative w-full flex justify-center px-4 pb-16">
         <ProblemList />
       </div>
 
-      <footer className="w-full border-border/40 py-5 px-4 flex items-center justify-center gap-5">
-        <span className="text-xs text-muted-foreground/40">© {new Date().getFullYear()} EliteCode</span>
-        <Link to="/terms" className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors">Terms</Link>
-        <Link to="/privacy" className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors">Privacy</Link>
+      <footer className="relative w-full py-5 px-4 flex items-center justify-center gap-5">
+        <span className="text-xs text-muted-foreground/35">© {new Date().getFullYear()} EliteCode</span>
+        <Link to="/terms" className="text-xs text-muted-foreground/35 hover:text-muted-foreground transition-colors">Terms</Link>
+        <Link to="/privacy" className="text-xs text-muted-foreground/35 hover:text-muted-foreground transition-colors">Privacy</Link>
       </footer>
     </div>
   )

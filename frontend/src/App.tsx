@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ProblemDetail } from "./pages/ProblemDetail";
 import { Problems } from "./pages/Problems";
 import { Profile } from "./pages/Profile";
+import { Resources } from "./pages/Resources";
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from "./api/queryClient";
 import { OAuthReturn } from "./pages/OAuthReturn";
@@ -19,6 +20,7 @@ const App: React.FC = () => {
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/profile" element={<Profile />} />
+<Route path="/resources" element={<Resources />} />
             <Route path="/problems/:id" element={<ProblemDetail />} />
             <Route path="/problems" element={<Problems />} />
             <Route path="/" element={<Problems />} />

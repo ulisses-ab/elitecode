@@ -18,6 +18,7 @@ language_info() {
   local lang="$1"
   case "$lang" in
     C++) echo "Compilation info: All .cpp files in the workspace will be compiled together using g++." ;;
+    C) echo "Compilation info: All .c files in the workspace will be compiled together using gcc." ;;
     Python) echo "All .py files in the workspace are available. Implement your solution in the provided file." ;;
     *) echo "" ;;
   esac

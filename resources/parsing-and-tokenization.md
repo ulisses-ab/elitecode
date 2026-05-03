@@ -1,43 +1,281 @@
-# Parsing & Tokenization
+# How programs understand text
 
-Parsing is the process of converting raw text into a structured representation that a program can work with. Almost all interpreters, compilers, configuration parsers, and command-line tools begin with the same two-stage pipeline: lexing followed by parsing.
+Think of this as how a program “reads” something like:
 
-## Stage 1 — Lexing (Tokenization)
+```
+3 + (4 * 2)
+```
 
-The lexer reads raw characters and groups them into tokens — the smallest meaningful units of the language. A token has a type (number, identifier, operator, bracket) and a value (the actual text it was matched from).
 
-For example, the string `3 + (4 * 2)` produces a flat list of tokens: `NUMBER(3)`, `PLUS`, `LPAREN`, `NUMBER(4)`, `STAR`, `NUMBER(2)`, `RPAREN`.
+At first, this is just a string of characters. The program needs to turn it into something structured before it can compute anything.
 
-The lexer's output throws away whitespace and comments, leaving only the semantically significant pieces. This simplifies the next stage considerably.
+---
 
-## Stage 2 — Parsing
+## Step 1 — Breaking text into pieces (Lexing)
 
-The parser consumes the token stream and builds an Abstract Syntax Tree (AST) — a tree that captures the grammatical structure of the input. Each node in the AST represents a construct: a binary operation, a function call, an if-statement, and so on.
+The program scans the text and groups characters into meaningful chunks.
 
-The AST makes the nesting and precedence of operations explicit in its shape. The expression `3 + 4 * 2` becomes a tree where the `*` node is a child of the `+` node, correctly encoding that multiplication binds tighter.
+```
+3 + (4 * 2)
+```
 
-## Recursive descent parsing
+becomes:
 
-Recursive descent is the most natural technique for hand-written parsers. You define one function per grammatical rule, and each function calls other functions for the sub-rules it contains. The call stack mirrors the tree structure being built.
+- `3`
+- `+`
+- `(`
+- `4`
+- `*`
+- `2`
+- `)`
 
-Operator precedence is encoded by the order of the grammar rules: rules for lower-precedence operators appear higher in the call chain and invoke rules for higher-precedence operators as sub-rules. When the parser wants a `term` (for multiplication), it calls `factor` (for atoms and parenthesised expressions) — the nesting naturally gives multiplication priority over addition.
+These chunks are called **tokens**.
 
-## Handling parentheses
+You can think of tokens like words in a sentence.  
+Spaces and comments are ignored because they don’t change the meaning.
 
-Parentheses are not stored in the AST — they only affect which sub-expressions are grouped together. The parser handles them by recursively calling the top-level expression-parsing rule when it encounters an open parenthesis, then consuming the matching close parenthesis. Whatever tree is built inside the parentheses becomes a single subtree at that position.
+---
 
-## Evaluation
+## Step 2 — Understanding the structure (Parsing)
 
-Once the AST is built, evaluating it is a post-order traversal: recursively evaluate the left and right children, then apply the current node's operator to the results. Leaf nodes (numbers, variables) return their value directly. This cleanly separates parsing (what does the structure mean?) from evaluation (what does it compute?).
+Now the program figures out how those tokens fit together.
 
-## Alternative approaches
+It builds a **tree structure** that represents the expression.
 
-**Shunting-yard** converts infix notation to postfix (reverse Polish notation) using a stack, without building an explicit tree. The postfix form can then be evaluated with a second stack pass. This is simpler to implement than a full recursive descent parser for expression evaluation specifically.
+For example:
 
-**Pratt parsing** associates a binding power with each token instead of encoding precedence in the grammar rules. It handles complex precedence and right-associativity elegantly and is the basis of many production parsers.
+```
+3 + 4 * 2
+```
 
-## Common challenges
+becomes:
 
-- Left recursion: a grammar rule that calls itself as its first action causes infinite recursion in a recursive descent parser and must be refactored.
-- Error recovery: deciding what to do when the input doesn't match the grammar — skip tokens, insert synthetic tokens, or report and abort.
-- Operator associativity: `a - b - c` should parse as `(a - b) - c` (left-associative), not `a - (b - c)`.
+```
+   +
+  / \
+ 3   *
+    / \
+   4   2
+```
+
+
+This shows that:
+- `4 * 2` happens first
+- then `+ 3`
+
+---
+
+## How the parser works (step by step)
+
+The parser reads the tokens from left to right and **builds the tree as it goes**.
+
+It always keeps track of a **current piece**, and when it sees an operator, it tries to **attach something to it**.
+
+---
+
+### Example: `3 + 4 * 2`
+
+Let’s walk through exactly what happens.
+
+---
+
+### Step 1 — read the first value
+
+The parser starts by reading a basic value:
+
+```
+3
+```
+
+So it has:
+
+```
+current = 3
+```
+
+
+---
+
+### Step 2 — see `+`
+
+Now it sees:
+
+```
++
+```
+
+
+This means:
+
+> “I need to combine what I have (`3`) with something on the right”
+
+So now it needs to figure out what the **right side** is.
+
+---
+
+### Step 3 — build the right side (the key step)
+
+The parser looks ahead and sees:
+
+```
+4 * 2
+```
+
+At first, it reads `4`.
+
+But then it sees `*`, which means:
+
+> “this isn’t just `4` — it’s a bigger piece”
+
+So it builds that first:
+
+```
+   *
+  / \
+ 4   2
+```
+
+
+Now the right side is the whole `4 * 2`, not just `4`.
+
+---
+
+### Step 4 — combine everything
+
+Now the parser has:
+
+- left: `3`
+- operator: `+`
+- right: `(4 * 2)`
+
+So it builds:
+
+```
+   +
+  / \
+ 3   *
+    / \
+   4   2
+```
+
+
+---
+
+## The key idea
+
+> When the parser needs the “right side”, it builds **as much as it can** before combining.
+
+That’s why `4 * 2` stays together.
+
+---
+
+## Another example: `3 * 4 + 2`
+
+Let’s flip the order:
+
+```
+3 * 4 + 2
+```
+
+---
+
+### Step 1
+
+```
+current = 3
+```
+
+
+---
+
+### Step 2 — see `*`
+
+- parse right side → `4`
+- build:
+
+```
+   *
+  / \
+ 3   4
+```
+
+Now:
+
+```
+current = (3 * 4)
+```
+
+
+---
+
+
+### Step 3 — see `+`
+
+- parse right side → `2`
+- build:
+
+```
+   +
+  / \
+ *   2
+/ \
+3  4
+```
+
+
+---
+
+## Why this works
+
+The parser always follows this pattern:
+
+1. Start with a value  
+2. While there’s an operator:
+   - read the operator  
+   - build the right side completely  
+   - combine into a bigger piece  
+
+So the tree grows step by step, and each new piece can itself be a whole subtree.
+
+---
+
+## Parentheses
+
+Parentheses tell the program:
+
+> “treat this part as a single piece”
+
+So in:
+
+```
+3 + (4 * 2)
+```
+
+
+the parser:
+1. fully builds `4 * 2`
+2. treats it as one unit
+3. then combines it with `3`
+
+---
+
+## Evaluating the result
+
+Once the tree is built, computing the result is simple.
+
+Start from the bottom:
+
+
+```
+   +
+  / \
+ 3   *
+    / \
+   4   2
+```
+
+
+- `4 * 2 = 8`
+- `3 + 8 = 11`
+
+---

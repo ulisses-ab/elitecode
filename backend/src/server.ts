@@ -26,7 +26,7 @@ async function bootstrap() {
   });
 
   app.use(cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CORS_ORIGIN?.split(",") || "*",
     credentials: true
   }));
 
