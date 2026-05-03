@@ -33,9 +33,7 @@ export function Problems() {
       <div className="relative w-full max-w-3xl mx-auto px-4 pt-20 pb-16 flex flex-col gap-10">
         <div className="space-y-4">
           <h1 className="text-[46px] sm:text-[54px] font-bold tracking-[-0.025em] leading-[1.08]">
-            <span className="text-foreground">Build real systems.</span>
-            <br />
-            <span className="text-foreground/80">Not toy problems.</span>
+            Challenges
           </h1>
           <p className="text-[16px] text-muted-foreground/50 leading-relaxed max-w-sm">
             A clean, focused environment for practicing software engineering.

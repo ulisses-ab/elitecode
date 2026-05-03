@@ -32,7 +32,7 @@ export function Navbar({ title = "EliteCode", className, ...props }: NavbarProps
         </Link>
         <Link to="/problems" className="hidden sm:block">
           <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground font-normal text-sm">
-            Problems
+            Challenges
           </Button>
         </Link>
         {/*<Link to="/resources" className="hidden sm:block">
