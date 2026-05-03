@@ -1,5 +1,0 @@
- curl -i -X POST "https://elitecode-production.up.railway.app/api/resources"     -H "Content-Type: application/json"     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3Njg5Nzg2NS1lNTQ0LTRkOTYtYjEzMC1iY2E0NWM3NWRjNDkiLCJpYXQiOjE3Nzc2MTAxMTUsImV4cCI6MTc4MDIwMjExNX0.6jR68_F0QNfXohyZv67-OjjyFDq84PsNMLx1SmKjPPE"     -d "$(jq -n \
-          --arg title "Lexing and Parsing" \
-          --rawfile content resources/parsing-and-tokenization.md \
-          --argjson order "100" \
-          '{title: $title, content: $content, order: $order}')"
